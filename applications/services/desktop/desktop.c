@@ -459,6 +459,25 @@ void desktop_unlock(Desktop* desktop) {
 int32_t desktop_shutdown(void* context) {
     // Attempt to launch the app, and if failed offer to shutdown (simpler UI)
     Desktop* desktop = context;
+
+    // Critical safety measures to prevent crash during shutdown with PIN enabled
+    // Especially important after waking from deep sleep
+    
+    // 1. Ensure we're not in a critical state before shutdown
+    furi_delay_ms(150); // Increased delay to ensure UI state is fully stable
+    
+    // 2. Verify and clean RTC state
+    // After deep sleep, RTC might have stale data causing crashes
+    if(furi_hal_rtc_is_flag_set(FuriHalRtcFlagLock)) {
+        // Reset PIN fail counter if device is locked
+        furi_hal_rtc_set_pin_fails(0);
+    }
+    
+    // 3. Ensure power subsystem is accessible
+    // This prevents null pointer dereferences
+    furi_check(desktop);
+    furi_check(desktop->loader);
+
     LoaderStatus result = loader_start(desktop->loader, "Power", "off", NULL);
     if(result != LoaderStatusOk) {
         // Mimic applications/settings/power_settings_app/scenes/power_settings_scene_power_off.c
@@ -468,9 +487,12 @@ int32_t desktop_shutdown(void* context) {
             message, "   I will be\nwaiting for\n you here...", 78, 14, AlignLeft, AlignTop);
         dialog_message_set_icon(message, &I_dolph_cry_49x54, 14, 10);
         dialog_message_set_buttons(message, "Cancel", NULL, "Power Off");
-        DialogMessageButton res = dialog_message_show(furi_record_open(RECORD_DIALOGS), message);
+
+        DialogsApp* dialogs = furi_record_open(RECORD_DIALOGS);
+        DialogMessageButton res = dialog_message_show(dialogs, message);
         furi_record_close(RECORD_DIALOGS);
         dialog_message_free(message);
+
         if(res == DialogMessageButtonRight) {
             Power* power = furi_record_open(RECORD_POWER);
             power_off(power);

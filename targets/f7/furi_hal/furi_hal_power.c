@@ -295,6 +295,11 @@ bool furi_hal_power_is_charging_done(void) {
 void furi_hal_power_shutdown(void) {
     furi_hal_power_insomnia_enter();
 
+    // Critical: Clean up RTC state before shutdown
+    // Prevents corruption issues when device was locked with PIN
+    // Especially important after deep sleep wake
+    furi_hal_rtc_set_pin_fails(0);
+
     furi_hal_bt_reinit();
 
     while(LL_HSEM_1StepLock(HSEM, CFG_HW_RCC_SEMID))

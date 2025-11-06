@@ -53,6 +53,7 @@ null.d
 
 # Toolchain
 /toolchain
+*.zip
 
 # openocd output file
 openocd.log

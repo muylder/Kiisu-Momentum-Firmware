@@ -7,6 +7,7 @@
 #include <furi_hal.h>
 #include <gui/icon_i.h>
 #include <storage/storage.h>
+#include <string.h>  // For memset
 
 #define TAG "AssetPacks"
 
@@ -15,6 +16,20 @@
 
 // See lib/u8g2/u8g2_font.c
 #define U8G2_FONT_DATA_STRUCT_SIZE 23
+
+// Icon cache optimization - cache frequently used icons
+#define ICON_CACHE_SIZE 16
+#define ICON_CACHE_TIMEOUT_MS 5000
+
+typedef struct {
+    const Icon* original;
+    const Icon* replaced;
+    uint32_t last_access;
+    uint32_t access_count;
+} IconCacheEntry;
+
+static IconCacheEntry icon_cache[ICON_CACHE_SIZE] = {0};
+static uint8_t icon_cache_head = 0;
 
 AssetPacks* asset_packs = NULL;
 
@@ -221,6 +236,10 @@ void asset_packs_init(void) {
 void asset_packs_free(void) {
     if(!asset_packs) return;
 
+    // Clear icon cache
+    memset(icon_cache, 0, sizeof(icon_cache));
+    icon_cache_head = 0;
+
     for
         M_EACH(icon_swap, asset_packs->icons, IconSwapList_t) {
             free_icon(icon_swap->replaced);
@@ -242,9 +261,29 @@ const Icon* asset_packs_swap_icon(const Icon* requested) {
     if((uint32_t)requested < FLASH_BASE || (uint32_t)requested > (FLASH_BASE + FLASH_SIZE)) {
         return requested;
     }
+
+    // Check cache first for performance boost
+    uint32_t current_tick = furi_get_tick();
+    for(uint8_t i = 0; i < ICON_CACHE_SIZE; i++) {
+        if(icon_cache[i].original == requested) {
+            // Cache hit - update access stats
+            icon_cache[i].last_access = current_tick;
+            icon_cache[i].access_count++;
+            return icon_cache[i].replaced;
+        }
+    }
+
+    // Cache miss - search in full list
     for
         M_EACH(icon_swap, asset_packs->icons, IconSwapList_t) {
             if(icon_swap->original == requested) {
+                // Add to cache using LRU-like strategy
+                icon_cache[icon_cache_head].original = icon_swap->original;
+                icon_cache[icon_cache_head].replaced = icon_swap->replaced;
+                icon_cache[icon_cache_head].last_access = current_tick;
+                icon_cache[icon_cache_head].access_count = 1;
+                icon_cache_head = (icon_cache_head + 1) % ICON_CACHE_SIZE;
+                
                 return icon_swap->replaced;
             }
         }

@@ -12,7 +12,9 @@ ENV.AppendUnique(
         "-fno-use-cxa-atexit",
         "-fno-exceptions",
         "-fno-threadsafe-statics",
-        "-ftemplate-depth=4096",
+        "-ftemplate-depth=512",  # Reduced from 4096 to save memory
+        "--param=ggc-min-expand=20",  # Garbage collector tuning for low memory
+        "--param=ggc-min-heapsize=4096",  # Minimum heap size
     ],
     CCFLAGS=[
         "-mcpu=cortex-m4",
@@ -34,6 +36,7 @@ ENV.AppendUnique(
         "-Wa,-gdwarf-sections",
         "-fsingle-precision-constant",
         "-fno-math-errno",
+        "-fno-strict-aliasing",  # Fix strict-aliasing errors in STM32 HAL
         # Generates .su files with stack usage information
         # "-fstack-usage",
         "-g",
@@ -49,5 +52,24 @@ ENV.AppendUnique(
         "-mlittle-endian",
         "-mthumb",
         "-Wl,--no-warn-rwx-segment",
+        # Link-time optimization flags
+        "-Wl,--gc-sections",  # Remove unused sections
+        "-Wl,--print-memory-usage",  # Print memory usage
     ],
 )
+
+# Apply LTO if enabled
+if ENV.get("LTO", 0):
+    ENV.AppendUnique(
+        CCFLAGS=["-flto"],
+        LINKFLAGS=["-flto"],
+    )
+
+# Apply aggressive optimizations if OPTIMIZATION_LEVEL >= 2
+if ENV.get("OPTIMIZATION_LEVEL", 0) >= 2:
+    ENV.AppendUnique(
+        CCFLAGS=[
+            "-ffast-math",  # Aggressive math optimizations
+            "-funroll-loops",  # Unroll loops for speed
+        ],
+    )

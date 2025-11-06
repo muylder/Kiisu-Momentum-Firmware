@@ -14,6 +14,10 @@ TARGET_HW = 7
 COMPACT = 1
 ## Optimize for debugging experience
 DEBUG = 0
+## Link-Time Optimization for better code optimization (disabled due to high memory usage)
+LTO = 0
+## Additional optimization level (0=none, 1=basic, 2=aggressive)
+OPTIMIZATION_LEVEL = 1
 
 # Suffix to add to files when building distribution
 # If OS environment has DIST_SUFFIX set, it will be used instead

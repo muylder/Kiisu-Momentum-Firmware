@@ -109,12 +109,12 @@ static FlipperApplicationPreloadStatus
         return FlipperApplicationPreloadStatusTargetMismatch;
     }
 
-    if(!flipper_application_manifest_is_too_old(
+    if(flipper_application_manifest_is_too_old(
            &app->manifest, elf_file_get_api_interface(app->elf))) {
         return FlipperApplicationPreloadStatusApiTooOld;
     }
 
-    if(!flipper_application_manifest_is_too_new(
+    if(flipper_application_manifest_is_too_new(
            &app->manifest, elf_file_get_api_interface(app->elf))) {
         return FlipperApplicationPreloadStatusApiTooNew;
     }

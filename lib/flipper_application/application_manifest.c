@@ -20,12 +20,12 @@ bool flipper_application_manifest_is_too_old(
     furi_check(manifest);
     furi_check(api_interface);
 
-    if(manifest->base.api_version.major < api_interface->api_version_major /* ||
-       manifest->base.api_version.minor > app->api_interface->api_version_minor */) {
-        return false;
+    // App is too old if its API version is less than firmware API version
+    if(manifest->base.api_version.major < api_interface->api_version_major) {
+        return true;
     }
 
-    return true;
+    return false;
 }
 
 bool flipper_application_manifest_is_too_new(
@@ -34,12 +34,12 @@ bool flipper_application_manifest_is_too_new(
     furi_check(manifest);
     furi_check(api_interface);
 
-    if(manifest->base.api_version.major > api_interface->api_version_major /* ||
-       manifest->base.api_version.minor > app->api_interface->api_version_minor */) {
-        return false;
+    // App is too new if its API version is greater than firmware API version
+    if(manifest->base.api_version.major > api_interface->api_version_major) {
+        return true;
     }
 
-    return true;
+    return false;
 }
 
 bool flipper_application_manifest_is_target_compatible(const FlipperApplicationManifest* manifest) {

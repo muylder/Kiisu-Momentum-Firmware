@@ -609,7 +609,6 @@ int32_t desktop_srv(void* p) {
     if(furi_hal_rtc_get_fault_data()) {
         scene_manager_next_scene(desktop->scene_manager, DesktopSceneFault);
     }
-
     /*
     uint8_t keys_total, keys_valid;
     if(!furi_hal_crypto_enclave_verify(&keys_total, &keys_valid)) {

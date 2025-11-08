@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(fbt.cmd format:*)",
+      "Bash(python scripts/lint.py:*)",
+      "Bash(echo:*)",
+      "Bash(scriptskiisu_fast_build.cmd firmware)",
+      "Bash(cmd.exe /c \"scripts\\kiisu_fast_build.cmd firmware\")",
+      "Bash(set BUILD_PROFILE=dev:*)",
+      "Bash(fbt.cmd:*)",
+      "Bash(python fbt:*)",
+      "Bash(cmd.exe /c \"set BUILD_PROFILE=dev && fbt.cmd firmware\")",
+      "Bash(./fbt firmware:*)",
+      "Bash(cmd //c \"fbt.cmd firmware\")",
+      "Bash(cmd //c \".\\fbt.cmd firmware\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

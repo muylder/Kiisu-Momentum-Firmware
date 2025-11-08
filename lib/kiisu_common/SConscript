@@ -1,0 +1,20 @@
+Import("env")
+
+env.Append(
+    CPPPATH=[
+        "#/lib/kiisu_common",
+    ],
+    SDK_HEADERS=[
+        File("kiisu_i2c_helpers.h"),
+    ],
+)
+
+libenv = env.Clone(FW_LIB_NAME="kiisu_common")
+libenv.ApplyLibFlags()
+
+sources = libenv.GlobRecursive("*.c")
+
+lib = libenv.StaticLibrary("${FW_LIB_NAME}", sources)
+libenv.Install("${LIB_DIST_DIR}", lib)
+
+Return("lib")

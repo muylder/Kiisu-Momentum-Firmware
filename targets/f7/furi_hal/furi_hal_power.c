@@ -291,7 +291,7 @@ bool furi_hal_power_is_charging(void) {
 }
 
 bool furi_hal_power_is_charging_done(void) {
-    if(!furi_hal_power.gauge_ok) return false;
+    // Gauge status is irrelevant for charger completion
     furi_hal_i2c_acquire(&furi_hal_i2c_handle_power);
     bool ret = bq25896_is_charging_done(&furi_hal_i2c_handle_power);
     furi_hal_i2c_release(&furi_hal_i2c_handle_power);

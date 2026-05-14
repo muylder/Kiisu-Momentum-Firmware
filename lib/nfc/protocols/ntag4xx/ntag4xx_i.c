@@ -24,6 +24,7 @@ Ntag4xxError ntag4xx_process_status_code(uint8_t status_code) {
     case NXP_NATIVE_COMMAND_STATUS_OPERATION_OK:
         return Ntag4xxErrorNone;
     default:
+        FURI_LOG_W(TAG, "Unexpected status code: 0x%02X", status_code);
         return Ntag4xxErrorProtocol;
     }
 }

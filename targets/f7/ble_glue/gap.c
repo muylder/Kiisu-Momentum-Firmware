@@ -84,6 +84,18 @@ static void gap_verify_connection_parameters(Gap* gap) {
         negotiation_failed |= connection_interval_max < gap->connection_params.conn_interval;
     }
 
+    // Enforce supervision timeout ceiling: if the peer proposed a timeout longer than our
+    // configured max, request a tighter value so silent link drops are detected faster.
+    if(params->supervisor_timeout > 0 &&
+       gap->connection_params.supervisor_timeout > params->supervisor_timeout) {
+        FURI_LOG_W(
+            TAG,
+            "Supervision timeout %d exceeds ceiling %d, requesting renegotiation",
+            gap->connection_params.supervisor_timeout,
+            params->supervisor_timeout);
+        negotiation_failed = true;
+    }
+
     if(negotiation_failed) {
         FURI_LOG_W(
             TAG,

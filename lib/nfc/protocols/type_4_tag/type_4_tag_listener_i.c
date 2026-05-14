@@ -212,7 +212,7 @@ static Type4TagError type_4_tag_listener_iso_write(
             const uint8_t write_len = sizeof(uint16_t) - offset;
             ndef_file_len_new = bit_lib_bytes_to_num_be(data, write_len);
             offset = sizeof(uint16_t);
-            data += offset;
+            data += write_len; // advance by bytes consumed for the length field, not by offset
             lc -= write_len;
         }
         offset -= sizeof(uint16_t);

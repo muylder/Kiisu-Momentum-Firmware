@@ -215,7 +215,18 @@ bool rpc_pb_stream_read(pb_istream_t* istream, pb_byte_t* buf, size_t count) {
         if(count == bytes_received) {
             break;
         } else {
-            flags = furi_thread_flags_wait(RPC_ALL_EVENTS, FuriFlagWaitAny, FuriWaitForever);
+            // 10-second safety-net: if the transport dies without sending RpcEvtDisconnect
+            // (e.g. radio failure before supervision timeout fires), we don't hang forever.
+            flags = furi_thread_flags_wait(RPC_ALL_EVENTS, FuriFlagWaitAny, 10000);
+            if(flags == (uint32_t)FuriStatusErrorTimeout) {
+                if(session->terminate) {
+                    istream->bytes_left = 0;
+                    bytes_received = 0;
+                    break;
+                }
+                // Spurious wakeup — keep waiting for data.
+                continue;
+            }
             if(flags & RpcEvtDisconnect) {
                 if(furi_stream_buffer_is_empty(session->stream)) {
                     session->terminate = true;

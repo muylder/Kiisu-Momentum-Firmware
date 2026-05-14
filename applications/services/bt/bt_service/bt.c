@@ -239,8 +239,13 @@ static void bt_rpc_send_bytes_callback(void* context, uint8_t* bytes, size_t byt
             bytes_sent += bytes_remain;
         }
         // We want BT_RPC_EVENT_DISCONNECTED to stick, so don't clear
+        // Use a 5s timeout: if the phone drops the link silently we won't hang forever
         uint32_t event_flag = furi_event_flag_wait(
-            bt->rpc_event, BT_RPC_EVENT_ALL, FuriFlagWaitAny | FuriFlagNoClear, FuriWaitForever);
+            bt->rpc_event, BT_RPC_EVENT_ALL, FuriFlagWaitAny | FuriFlagNoClear, 5000);
+        if(event_flag == (uint32_t)FuriStatusErrorTimeout) {
+            FURI_LOG_W(TAG, "BLE TX timeout, assuming link lost");
+            break;
+        }
         if(event_flag & BT_RPC_EVENT_DISCONNECTED) {
             break;
         } else {

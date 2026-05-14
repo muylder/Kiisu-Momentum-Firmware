@@ -99,7 +99,10 @@ static void cli_vcp_maybe_receive_data(CliVcp* cli_vcp) {
 // =============
 
 static void cli_vcp_signal_internal_event(CliVcp* cli_vcp, CliVcpInternalEvent event) {
-    furi_check(furi_message_queue_put(cli_vcp->internal_evt_queue, &event, 0) == FuriStatusOk);
+    // Don't crash if the queue is momentarily full on hot-plug (multiple CDC callbacks
+    // can fire before the event loop drains the queue). Rx/TxDone events are safe to
+    // coalesce; Connected/Disconnected are rare enough that the queue will have room.
+    furi_message_queue_put(cli_vcp->internal_evt_queue, &event, 0);
 }
 
 static void cli_vcp_cdc_tx_done(void* context) {

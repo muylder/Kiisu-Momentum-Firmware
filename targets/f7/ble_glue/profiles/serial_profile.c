@@ -46,6 +46,8 @@ static void ble_profile_serial_stop(FuriHalBleProfileBase* profile) {
 #define CONNECTION_INTERVAL_MIN (0x06)
 // Up to 45 ms
 #define CONNECTION_INTERVAL_MAX (0x24)
+// 3000 ms ceiling (300 × 10 ms units) so silent link drops are detected within 3 s
+#define SUPERVISION_TIMEOUT_MAX (0x012C)
 
 static const GapConfig serial_template_config = {
     .adv_service =
@@ -60,7 +62,7 @@ static const GapConfig serial_template_config = {
         .conn_int_min = CONNECTION_INTERVAL_MIN,
         .conn_int_max = CONNECTION_INTERVAL_MAX,
         .slave_latency = 0,
-        .supervisor_timeout = 0,
+        .supervisor_timeout = SUPERVISION_TIMEOUT_MAX,
     }};
 
 static void

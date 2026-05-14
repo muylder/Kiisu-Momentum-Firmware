@@ -26,6 +26,7 @@ ENV.AppendUnique(
         "-Werror",
         "-Wno-error=deprecated-declarations",
         "-Wno-address-of-packed-member",
+        "-Wno-error=strict-aliasing",
         "-Wredundant-decls",
         "-Wdouble-promotion",
         "-Wundef",

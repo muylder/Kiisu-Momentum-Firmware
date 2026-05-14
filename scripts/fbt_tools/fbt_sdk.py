@@ -193,6 +193,13 @@ def _deploy_sdk_header_tree_emitter(target, source, env):
     return sdk_tree.emitter(target, source, env)
 
 
+def _elf_gnu_hash(name: str) -> int:
+    h = 0x1505
+    for c in name.encode("ascii"):
+        h = ((h << 5) + h + c) & 0xFFFFFFFF
+    return h
+
+
 def gen_sdk_data(sdk_cache: SdkCache):
     api_def = []
     api_def.extend(
@@ -202,22 +209,23 @@ def gen_sdk_data(sdk_cache: SdkCache):
 
     api_def.append(f"const int elf_api_version = {sdk_cache.version.as_int()};")
 
-    api_def.append(
-        "static constexpr auto elf_api_table = sort(create_array_t<sym_entry>("
-    )
-
     api_lines = []
     for fun_def in sdk_cache.get_functions():
         api_lines.append(
-            f"API_METHOD({fun_def.name}, {fun_def.returns}, ({fun_def.params}))"
+            (_elf_gnu_hash(fun_def.name), f"API_METHOD({fun_def.name}, {fun_def.returns}, ({fun_def.params}))")
         )
 
     for var_def in sdk_cache.get_variables():
-        api_lines.append(f"API_VARIABLE({var_def.name}, {var_def.var_type })")
+        api_lines.append((_elf_gnu_hash(var_def.name), f"API_VARIABLE({var_def.name}, {var_def.var_type })"))
 
-    api_def.append(",\n".join(api_lines))
-
-    api_def.append("));")
+    # Pre-sort by gnu hash in Python; use plain aggregate init to avoid variadic template OOM
+    api_lines.sort(key=lambda x: x[0])
+    n = len(api_lines)
+    api_def.append(
+        f"static constexpr std::array<sym_entry, {n}> elf_api_table = {{{{"
+    )
+    api_def.append(",\n".join(line for _, line in api_lines))
+    api_def.append("}};")
     return api_def
 
 

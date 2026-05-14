@@ -9,21 +9,31 @@ void lp5562_reset(const FuriHalI2cBusHandle* handle) {
 }
 
 void lp5562_configure(const FuriHalI2cBusHandle* handle) {
-    Reg08_Config config = {.INT_CLK_EN = true, .PS_EN = true, .PWM_HF = true};
-    furi_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x08, *(uint8_t*)&config, LP5562_I2C_TIMEOUT);
+    Reg08_Config config = {0};
+    config.INT_CLK_EN = true;
+    config.PS_EN = true;
+    config.PWM_HF = true;
+    uint8_t config_b;
+    __builtin_memcpy(&config_b, &config, sizeof(config_b));
+    furi_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x08, config_b, LP5562_I2C_TIMEOUT);
 
-    Reg70_LedMap map = {
-        .red = EngSelectI2C,
-        .green = EngSelectI2C,
-        .blue = EngSelectI2C,
-        .white = EngSelectI2C,
-    };
-    furi_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x70, *(uint8_t*)&map, LP5562_I2C_TIMEOUT);
+    Reg70_LedMap map = {0};
+    map.red = EngSelectI2C;
+    map.green = EngSelectI2C;
+    map.blue = EngSelectI2C;
+    map.white = EngSelectI2C;
+    uint8_t map_b;
+    __builtin_memcpy(&map_b, &map, sizeof(map_b));
+    furi_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x70, map_b, LP5562_I2C_TIMEOUT);
 }
 
 void lp5562_enable(const FuriHalI2cBusHandle* handle) {
-    Reg00_Enable reg = {.CHIP_EN = true, .LOG_EN = true};
-    furi_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x00, *(uint8_t*)&reg, LP5562_I2C_TIMEOUT);
+    Reg00_Enable reg = {0};
+    reg.CHIP_EN = true;
+    reg.LOG_EN = true;
+    uint8_t reg_b;
+    __builtin_memcpy(&reg_b, &reg, sizeof(reg_b));
+    furi_hal_i2c_write_reg_8(handle, LP5562_ADDRESS, 0x00, reg_b, LP5562_I2C_TIMEOUT);
     //>488μs delay is required after writing to 0x00 register, otherwise program engine will not work
     furi_delay_us(500);
 }

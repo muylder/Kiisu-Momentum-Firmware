@@ -122,7 +122,7 @@ void momentum_app_scene_misc_dolphin_on_enter(void* context) {
     snprintf(level_str, sizeof(level_str), "%u", level);
     item = variable_item_list_add(
         var_item_list,
-        "Dolphin Level",
+        "Kiisu Level",
         DOLPHIN_LEVEL_COUNT + 1,
         momentum_app_scene_misc_dolphin_dolphin_level_changed,
         app);
@@ -134,7 +134,7 @@ void momentum_app_scene_misc_dolphin_on_enter(void* context) {
     // uin8_t index too small for all levels, use 3 fake items to
     // show buttons and change values in callback
     item = variable_item_list_add(
-        var_item_list, "Dolphin XP", 3, momentum_app_scene_misc_dolphin_dolphin_xp_changed, app);
+        var_item_list, "Kiisu XP", 3, momentum_app_scene_misc_dolphin_dolphin_xp_changed, app);
     variable_item_set_current_value_index(
         item,
         app->dolphin_xp == 0              ? 0 :
@@ -146,7 +146,7 @@ void momentum_app_scene_misc_dolphin_on_enter(void* context) {
     snprintf(angry_str, sizeof(angry_str), "%lu", app->dolphin_angry);
     item = variable_item_list_add(
         var_item_list,
-        "Dolphin Angry",
+        "Kiisu Angry",
         BUTTHURT_MAX + 1,
         momentum_app_scene_misc_dolphin_dolphin_angry_changed,
         app);

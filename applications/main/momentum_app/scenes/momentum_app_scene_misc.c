@@ -21,7 +21,7 @@ void momentum_app_scene_misc_on_enter(void* context) {
     item = variable_item_list_add(var_item_list, "Screen", 0, NULL, app);
     variable_item_set_current_value_text(item, ">");
 
-    item = variable_item_list_add(var_item_list, "Dolphin", 0, NULL, app);
+    item = variable_item_list_add(var_item_list, "Kiisu", 0, NULL, app);
     variable_item_set_current_value_text(item, ">");
 
     item = variable_item_list_add(var_item_list, "Spoofing Options", 0, NULL, app);

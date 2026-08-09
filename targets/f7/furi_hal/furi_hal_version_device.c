@@ -13,21 +13,21 @@ const char* furi_hal_version_get_model_code(void) {
 }
 
 const char* furi_hal_version_get_fcc_id(void) {
-    return " ";
+    return "";
 }
 
 const char* furi_hal_version_get_ic_id(void) {
-    return " ";
+    return "";
 }
 
 const char* furi_hal_version_get_mic_id(void) {
-    return " ";
+    return "";
 }
 
 const char* furi_hal_version_get_srrc_id(void) {
-    return " ";
+    return "";
 }
 
 const char* furi_hal_version_get_ncc_id(void) {
-    return " ";
+    return "";
 }

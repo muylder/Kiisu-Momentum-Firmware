@@ -330,7 +330,7 @@ bool desktop_lock_menu_input_callback(InputEvent* event, void* context) {
                 case DesktopLockMenuIndexBrightness:
                     value = lock_menu->notification->settings.display_brightness + 0.05 * offset;
                     lock_menu->notification->settings.display_brightness =
-                        value < 0.00f ? 0.00f : (value > 1.00f ? 1.00f : value);
+                        value < 0.05f ? 0.05f : (value > 1.00f ? 1.00f : value);
                     lock_menu->save_notification = true;
                     notification_message(lock_menu->notification, &sequence_display_backlight_on);
                     break;

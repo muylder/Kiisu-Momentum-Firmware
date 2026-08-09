@@ -80,13 +80,13 @@ void furi_hal_i2c_bus_handle_power_event(
         furi_hal_gpio_init_ex(
             &gpio_i2c_power_sda,
             GpioModeAltFunctionOpenDrain,
-            GpioPullNo,
+            GpioPullUp,
             GpioSpeedLow,
             GpioAltFn4I2C1);
         furi_hal_gpio_init_ex(
             &gpio_i2c_power_scl,
             GpioModeAltFunctionOpenDrain,
-            GpioPullNo,
+            GpioPullUp,
             GpioSpeedLow,
             GpioAltFn4I2C1);
 

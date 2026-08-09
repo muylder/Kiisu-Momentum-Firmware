@@ -24,4 +24,3 @@ Max butthurt: 14
 Min level: 1
 Max level: 30
 Weight: 6
-

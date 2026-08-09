@@ -16,7 +16,7 @@ Max level: 30
 Weight: 5
 
 Name: LA_KiisuSad_128x64
-Min butthurt: 5
+Min butthurt: 8
 Max butthurt: 14
 Min level: 1
 Max level: 30

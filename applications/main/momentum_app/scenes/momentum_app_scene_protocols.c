@@ -114,7 +114,7 @@ bool momentum_app_scene_protocols_on_event(void* context, SceneManagerEvent even
                                                                     "Extends TX to 281-361,\n"
                                                                     "378-481, 749-962 MHz\n"
                                                                     "Use at own risk, may\n"
-                                                                    "damage Flipper",
+                                                                    "damage Kiisu",
                     64,
                     36,
                     AlignCenter,

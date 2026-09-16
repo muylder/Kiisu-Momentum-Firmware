@@ -11,8 +11,9 @@
 
 #define TAG "BleGap"
 
-#define FAST_ADV_TIMEOUT    30000
-#define INITIAL_ADV_TIMEOUT 60000
+#define FAST_ADV_TIMEOUT           30000
+#define INITIAL_ADV_TIMEOUT        60000
+#define GAP_MAX_NEGOTIATION_ROUNDS 2
 
 #define GAP_INTERVAL_TO_MS(x) (uint16_t)((x) * 1.25)
 
@@ -70,11 +71,8 @@ static void gap_verify_connection_parameters(Gap* gap) {
     // Send connection parameters request update if necessary
     GapConnectionParamsRequest* params = &gap->config->conn_param;
 
-    // Desired max connection interval depends on how many negotiation rounds we had in the past
-    // In the first negotiation round we want connection interval to be minimum
-    // If platform disagree then we request wider range
-    uint16_t connection_interval_max = gap->negotiation_round ? params->conn_int_max :
-                                                                params->conn_int_min;
+    // Accept the profile's full range instead of forcing its minimum interval.
+    uint16_t connection_interval_max = params->conn_int_max;
 
     // We do care about lower connection interval bound a lot: if it's lower than 30ms 2nd core will not allow us to use flash controller
     bool negotiation_failed = params->conn_int_min > gap->connection_params.conn_interval;
@@ -85,10 +83,12 @@ static void gap_verify_connection_parameters(Gap* gap) {
     }
 
     if(negotiation_failed) {
+        if(gap->negotiation_round >= GAP_MAX_NEGOTIATION_ROUNDS) return;
         FURI_LOG_W(
             TAG,
             "Connection interval doesn't suite us. Trying to negotiate, round %u",
             gap->negotiation_round + 1);
+        gap->negotiation_round++;
         if(aci_l2cap_connection_parameter_update_req(
                gap->service.connection_handle,
                params->conn_int_min,
@@ -96,19 +96,12 @@ static void gap_verify_connection_parameters(Gap* gap) {
                gap->connection_params.slave_latency,
                gap->connection_params.supervisor_timeout)) {
             FURI_LOG_E(TAG, "Failed to request connection parameters update");
-            // The other side is not in the mood
-            // But we are open to try it again
-            gap->negotiation_round = 0;
-        } else {
-            gap->negotiation_round++;
         }
     } else {
         FURI_LOG_I(
             TAG,
             "Connection interval suits us. Spent %u rounds to negotiate",
             gap->negotiation_round);
-        // Looks like the other side is open to negotiation
-        gap->negotiation_round = 0;
     }
 }
 
@@ -130,12 +123,14 @@ BleEventFlowStatus ble_event_app_notification(void* pckt) {
     case HCI_DISCONNECTION_COMPLETE_EVT_CODE: {
         hci_disconnection_complete_event_rp0* disconnection_complete_event =
             (hci_disconnection_complete_event_rp0*)event_pckt->data;
-        if(disconnection_complete_event->Connection_Handle == gap->service.connection_handle) {
-            gap->service.connection_handle = 0;
-            gap->state = GapStateIdle;
-            FURI_LOG_I(
-                TAG, "Disconnect from client. Reason: %02X", disconnection_complete_event->Reason);
+        if(disconnection_complete_event->Status ||
+           disconnection_complete_event->Connection_Handle != gap->service.connection_handle) {
+            break;
         }
+        gap->service.connection_handle = 0xFFFF;
+        gap->state = GapStateIdle;
+        FURI_LOG_I(
+            TAG, "Disconnect from client. Reason: %02X", disconnection_complete_event->Reason);
         gap->is_secure = false;
         gap->negotiation_round = 0;
         // Enterprise sleep
@@ -154,6 +149,11 @@ BleEventFlowStatus ble_event_app_notification(void* pckt) {
         case HCI_LE_CONNECTION_UPDATE_COMPLETE_SUBEVT_CODE: {
             hci_le_connection_update_complete_event_rp0* event =
                 (hci_le_connection_update_complete_event_rp0*)meta_evt->data;
+            if(event->Status || event->Connection_Handle != gap->service.connection_handle) {
+                FURI_LOG_W(
+                    TAG, "Ignoring unsuccessful or stale connection update: %u", event->Status);
+                break;
+            }
             gap->connection_params.conn_interval = event->Conn_Interval;
             gap->connection_params.slave_latency = event->Conn_Latency;
             gap->connection_params.supervisor_timeout = event->Supervision_Timeout;
@@ -181,6 +181,12 @@ BleEventFlowStatus ble_event_app_notification(void* pckt) {
         case HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE: {
             hci_le_connection_complete_event_rp0* event =
                 (hci_le_connection_complete_event_rp0*)meta_evt->data;
+            if(event->Status) {
+                FURI_LOG_W(TAG, "Connection failed: %u", event->Status);
+                gap->state = GapStateIdle;
+                if(gap->enable_adv) gap_advertise_start(GapStateAdvFast);
+                break;
+            }
             gap->connection_params.conn_interval = event->Conn_Interval;
             gap->connection_params.slave_latency = event->Conn_Latency;
             gap->connection_params.supervisor_timeout = event->Supervision_Timeout;
@@ -282,11 +288,7 @@ BleEventFlowStatus ble_event_app_notification(void* pckt) {
             }
             break;
 
-        case ACI_L2CAP_CONNECTION_UPDATE_RESP_VSEVT_CODE:
-            FURI_LOG_D(TAG, "Procedure complete event");
-            break;
-
-        case ACI_L2CAP_CONNECTION_UPDATE_REQ_VSEVT_CODE: {
+        case ACI_L2CAP_CONNECTION_UPDATE_RESP_VSEVT_CODE: {
             uint16_t result =
                 ((aci_l2cap_connection_update_resp_event_rp0*)(blue_evt->data))->Result;
             if(result == 0) {
@@ -421,6 +423,10 @@ static void gap_init_svc(Gap* gap, const GapRootSecurityKeys* root_keys) {
 }
 
 static void gap_advertise_start(GapState new_state) {
+    // A timer command may already be queued when a connection or stop wins the race.
+    if(!gap->enable_adv || gap->state == GapStateConnected) return;
+    if(new_state == GapStateAdvLowPower && gap->state != GapStateAdvFast) return;
+
     tBleStatus status;
     uint16_t min_interval;
     uint16_t max_interval;
@@ -448,9 +454,11 @@ static void gap_advertise_start(GapState new_state) {
         }
     }
 
-    if(gap->service.mfg_data_len > 0) {
-        hci_le_set_scan_response_data(gap->service.mfg_data_len, gap->service.mfg_data);
-    }
+    // Clear a previous profile's scan response even when this profile has no extra data.
+    // The HCI wrapper copies all 31 bytes regardless of the advertised length.
+    uint8_t scan_response[31] = {0};
+    memcpy(scan_response, gap->service.mfg_data, gap->service.mfg_data_len);
+    hci_le_set_scan_response_data(gap->service.mfg_data_len, scan_response);
 
     // Configure advertising
     status = aci_gap_set_discoverable(
@@ -467,11 +475,15 @@ static void gap_advertise_start(GapState new_state) {
         0);
     if(status) {
         FURI_LOG_E(TAG, "set_discoverable failed %d", status);
+        gap->state = GapStateIdle;
+        return;
     }
     gap->state = new_state;
     GapEvent event = {.type = GapEventTypeStartAdvertising};
     gap->on_event_cb(event, gap->context);
-    furi_timer_start(gap->advertise_timer, INITIAL_ADV_TIMEOUT);
+    if(new_state == GapStateAdvFast) {
+        furi_timer_start(gap->advertise_timer, INITIAL_ADV_TIMEOUT);
+    }
 }
 
 static void gap_advertise_stop(void) {

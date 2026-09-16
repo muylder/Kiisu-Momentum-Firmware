@@ -11,9 +11,11 @@
 
 #define TAG "BtSrv"
 
-#define BT_RPC_EVENT_BUFF_SENT    (1UL << 0)
-#define BT_RPC_EVENT_DISCONNECTED (1UL << 1)
-#define BT_RPC_EVENT_ALL          (BT_RPC_EVENT_BUFF_SENT | BT_RPC_EVENT_DISCONNECTED)
+#define BT_RPC_EVENT_BUFF_SENT     (1UL << 0)
+#define BT_RPC_EVENT_DISCONNECTED  (1UL << 1)
+#define BT_RPC_EVENT_ALL           (BT_RPC_EVENT_BUFF_SENT | BT_RPC_EVENT_DISCONNECTED)
+#define BT_RPC_TX_TIMEOUT_MS       10000
+#define BT_RPC_PACKET_SIZE_DEFAULT 20
 
 #define ICON_SPACER 2
 
@@ -156,7 +158,7 @@ static void bt_battery_level_changed_callback(const void* _event, void* context)
 Bt* bt_alloc(void) {
     Bt* bt = malloc(sizeof(Bt));
     // Init default maximum packet size
-    bt->max_packet_size = BLE_PROFILE_SERIAL_PACKET_SIZE_MAX;
+    bt->max_packet_size = BT_RPC_PACKET_SIZE_DEFAULT;
     bt->current_profile = NULL;
     // Keys storage
     bt->keys_storage = bt_keys_storage_alloc(BT_KEYS_STORAGE_PATH);
@@ -230,23 +232,35 @@ static void bt_rpc_send_bytes_callback(void* context, uint8_t* bytes, size_t byt
     furi_event_flag_clear(bt->rpc_event, BT_RPC_EVENT_ALL & (~BT_RPC_EVENT_DISCONNECTED));
     size_t bytes_sent = 0;
     while(bytes_sent < bytes_len) {
+        if(furi_event_flag_get(bt->rpc_event) & BT_RPC_EVENT_DISCONNECTED) break;
         size_t bytes_remain = bytes_len - bytes_sent;
-        if(bytes_remain > bt->max_packet_size) {
-            ble_profile_serial_tx(bt->current_profile, &bytes[bytes_sent], bt->max_packet_size);
-            bytes_sent += bt->max_packet_size;
-        } else {
-            ble_profile_serial_tx(bt->current_profile, &bytes[bytes_sent], bytes_remain);
-            bytes_sent += bytes_remain;
-        }
+        size_t packet_size = MIN(bytes_remain, bt->max_packet_size);
+        bool sent = packet_size &&
+                    ble_profile_serial_tx(bt->current_profile, &bytes[bytes_sent], packet_size);
         // We want BT_RPC_EVENT_DISCONNECTED to stick, so don't clear
-        uint32_t event_flag = furi_event_flag_wait(
-            bt->rpc_event, BT_RPC_EVENT_ALL, FuriFlagWaitAny | FuriFlagNoClear, FuriWaitForever);
+        uint32_t event_flag = sent ? furi_event_flag_wait(
+                                         bt->rpc_event,
+                                         BT_RPC_EVENT_ALL,
+                                         FuriFlagWaitAny | FuriFlagNoClear,
+                                         furi_ms_to_ticks(BT_RPC_TX_TIMEOUT_MS)) :
+                                     FuriFlagErrorUnknown;
+        if(event_flag & FuriFlagError) {
+            FURI_LOG_E(TAG, "RPC transmission failed or timed out");
+            // A partial RPC frame cannot safely be followed by another response.
+            furi_event_flag_set(bt->rpc_event, BT_RPC_EVENT_DISCONNECTED);
+            const BtMessage message = {.type = BtMessageTypeRpcTxFailed};
+            if(furi_message_queue_put(bt->message_queue, &message, 0) != FuriStatusOk) {
+                FURI_LOG_E(TAG, "Unable to queue RPC disconnect");
+            }
+            break;
+        }
         if(event_flag & BT_RPC_EVENT_DISCONNECTED) {
             break;
         } else {
             // If we didn't get BT_RPC_EVENT_DISCONNECTED, then clear everything else
             furi_event_flag_clear(bt->rpc_event, BT_RPC_EVENT_ALL & (~BT_RPC_EVENT_DISCONNECTED));
         }
+        bytes_sent += packet_size;
     }
 }
 
@@ -281,6 +295,7 @@ static bool bt_on_gap_event_callback(GapEvent event, void* context) {
             furi_message_queue_put(bt->message_queue, &message, FuriWaitForever) == FuriStatusOk);
         ret = true;
     } else if(event.type == GapEventTypeDisconnected) {
+        bt->max_packet_size = BT_RPC_PACKET_SIZE_DEFAULT;
         if(current_profile_is_serial && bt->rpc_session) {
             FURI_LOG_I(TAG, "Close RPC connection");
             ble_profile_serial_set_rpc_active(
@@ -308,7 +323,10 @@ static bool bt_on_gap_event_callback(GapEvent event, void* context) {
     } else if(event.type == GapEventTypePinCodeVerify) {
         ret = bt_pin_code_verify_event_handler(bt, event.data.pin_code);
     } else if(event.type == GapEventTypeUpdateMTU) {
-        bt->max_packet_size = event.data.max_packet_size;
+        if(event.data.max_packet_size) {
+            bt->max_packet_size =
+                MIN(event.data.max_packet_size, BLE_PROFILE_SERIAL_PACKET_SIZE_MAX);
+        }
         ret = true;
     } else if(event.type == GapEventTypeBeaconStart) {
         bt->beacon_active = true;
@@ -402,6 +420,14 @@ void bt_close_rpc_connection(Bt* bt) {
     }
 }
 
+static void bt_remember_serial_identity(Bt* bt) {
+    strlcpy(
+        bt->serial_device_name,
+        furi_hal_version_get_ble_local_device_name_ptr(),
+        sizeof(bt->serial_device_name));
+    memcpy(bt->serial_mac, furi_hal_version_get_ble_mac(), sizeof(bt->serial_mac));
+}
+
 static void bt_change_profile(Bt* bt, BtMessage* message) {
     if(furi_hal_bt_is_gatt_gap_supported()) {
         bt_settings_load(&bt->bt_settings);
@@ -418,6 +444,9 @@ static void bt_change_profile(Bt* bt, BtMessage* message) {
             bt);
         if(bt->current_profile) {
             FURI_LOG_I(TAG, "Bt App started");
+            if(furi_hal_bt_check_profile_type(bt->current_profile, ble_profile_serial)) {
+                bt_remember_serial_identity(bt);
+            }
             if(bt->bt_settings.enabled) {
                 furi_hal_bt_start_advertising();
             }
@@ -475,6 +504,14 @@ static void bt_load_keys(Bt* bt) {
 }
 
 static void bt_start_application(Bt* bt) {
+    if(furi_hal_bt_check_profile_type(bt->current_profile, ble_profile_serial) &&
+       (strcmp(bt->serial_device_name, furi_hal_version_get_ble_local_device_name_ptr()) ||
+        memcmp(bt->serial_mac, furi_hal_version_get_ble_mac(), sizeof(bt->serial_mac)))) {
+        // SD settings may have loaded after the serial profile was created.
+        FURI_LOG_I(TAG, "Reloading BLE identity from device settings");
+        bt_close_rpc_connection(bt);
+        bt->current_profile = NULL;
+    }
     if(!bt->current_profile) {
         bt->current_profile = furi_hal_bt_change_app(
             ble_profile_serial,
@@ -486,6 +523,8 @@ static void bt_start_application(Bt* bt) {
         if(!bt->current_profile) {
             FURI_LOG_E(TAG, "BLE App start failed");
             bt->status = BtStatusUnavailable;
+        } else {
+            bt_remember_serial_identity(bt);
         }
     }
 }
@@ -584,6 +623,12 @@ int32_t bt_srv(void* p) {
             bt_change_profile(bt, &message);
         } else if(message.type == BtMessageTypeDisconnect) {
             bt_close_connection(bt);
+        } else if(message.type == BtMessageTypeRpcTxFailed) {
+            if(furi_hal_bt_check_profile_type(bt->current_profile, ble_profile_serial) &&
+               (furi_event_flag_get(bt->rpc_event) & BT_RPC_EVENT_DISCONNECTED)) {
+                bt_close_connection(bt);
+                bt_apply_settings(bt);
+            }
         } else if(message.type == BtMessageTypeForgetBondedDevices) {
             bt_keys_storage_delete(bt->keys_storage);
         } else if(message.type == BtMessageTypeGetSettings) {

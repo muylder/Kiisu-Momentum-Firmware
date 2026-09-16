@@ -98,7 +98,8 @@ void furi_hal_version_set_name(const char* name) {
     if(name == NULL) {
         name = version_get_custom_name(NULL);
         if(name != NULL) {
-            udn = *((uint32_t*)name);
+            udn = 0;
+            memcpy(&udn, name, MIN(strlen(name), sizeof(udn)));
         }
     }
     if(name != NULL && strlen(name)) {

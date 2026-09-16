@@ -1,0 +1,11 @@
+App(
+    appid="ble_hardware_remote",
+    name="BLE Hardware Remote",
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="ble_hardware_remote_app",
+    requires=["gui", "bt", "dialogs"],
+    stack_size=2 * 1024,
+    order=20,
+    fap_category="Bluetooth",
+    fap_description="Use external hardware (GPIO) to control PC via BLE",
+)

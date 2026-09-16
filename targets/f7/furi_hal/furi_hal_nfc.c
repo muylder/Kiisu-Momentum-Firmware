@@ -80,7 +80,7 @@ FuriHalNfcError furi_hal_nfc_init(void) {
     do {
         error = furi_hal_nfc_acquire();
         if(error != FuriHalNfcErrorNone) {
-            furi_hal_nfc_low_power_mode_start();
+            break;
         }
 
         const FuriHalSpiBusHandle* handle = &furi_hal_spi_bus_handle_nfc;

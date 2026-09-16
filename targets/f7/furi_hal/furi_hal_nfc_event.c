@@ -43,11 +43,11 @@ FuriHalNfcEvent furi_hal_nfc_wait_event_common(uint32_t timeout_ms) {
     FuriHalNfcEvent event = 0;
     uint32_t event_timeout = timeout_ms == FURI_HAL_NFC_EVENT_WAIT_FOREVER ? FuriWaitForever :
                                                                              timeout_ms;
+    // The wait clears consumed flags atomically. Clearing again can lose a new interrupt.
     uint32_t event_flag =
         furi_thread_flags_wait(FURI_HAL_NFC_EVENT_INTERNAL_ALL, FuriFlagWaitAny, event_timeout);
-    if(event_flag != (unsigned)FuriFlagErrorTimeout) {
+    if(!(event_flag & FuriFlagError)) {
         if(event_flag & FuriHalNfcEventInternalTypeIrq) {
-            furi_thread_flags_clear(FuriHalNfcEventInternalTypeIrq);
             const FuriHalSpiBusHandle* handle = &furi_hal_spi_bus_handle_nfc;
             uint32_t irq = furi_hal_nfc_get_irq(handle);
             if(irq & ST25R3916_IRQ_MASK_OSC) {
@@ -83,18 +83,18 @@ FuriHalNfcEvent furi_hal_nfc_wait_event_common(uint32_t timeout_ms) {
         }
         if(event_flag & FuriHalNfcEventInternalTypeTimerFwtExpired) {
             event |= FuriHalNfcEventTimerFwtExpired;
-            furi_thread_flags_clear(FuriHalNfcEventInternalTypeTimerFwtExpired);
         }
         if(event_flag & FuriHalNfcEventInternalTypeTimerBlockTxExpired) {
             event |= FuriHalNfcEventTimerBlockTxExpired;
-            furi_thread_flags_clear(FuriHalNfcEventInternalTypeTimerBlockTxExpired);
         }
         if(event_flag & FuriHalNfcEventInternalTypeAbort) {
             event |= FuriHalNfcEventAbortRequest;
-            furi_thread_flags_clear(FuriHalNfcEventInternalTypeAbort);
         }
     } else {
-        event = FuriHalNfcEventTimeout;
+        event = (event_flag == (unsigned)FuriFlagErrorTimeout ||
+                 event_flag == (unsigned)FuriFlagErrorResource) ?
+                    FuriHalNfcEventTimeout :
+                    FuriHalNfcEventAbortRequest;
     }
 
     return event;
@@ -113,7 +113,6 @@ bool furi_hal_nfc_event_wait_for_specific_irq(
     if(event_flag == FuriHalNfcEventInternalTypeIrq) {
         uint32_t irq = furi_hal_nfc_get_irq(handle);
         irq_received = ((irq & mask) == mask);
-        furi_thread_flags_clear(FuriHalNfcEventInternalTypeIrq);
     }
 
     return irq_received;

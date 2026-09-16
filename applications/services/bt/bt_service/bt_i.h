@@ -29,6 +29,7 @@ typedef enum {
     BtMessageTypeKeysStorageUpdated,
     BtMessageTypeSetProfile,
     BtMessageTypeDisconnect,
+    BtMessageTypeRpcTxFailed,
     BtMessageTypeForgetBondedDevices,
     BtMessageTypeGetSettings,
     BtMessageTypeSetSettings,
@@ -71,6 +72,8 @@ struct Bt {
     BtStatus status;
     bool beacon_active;
     FuriHalBleProfileBase* current_profile;
+    char serial_device_name[FURI_HAL_VERSION_DEVICE_NAME_LENGTH];
+    uint8_t serial_mac[GAP_MAC_ADDR_SIZE];
     FuriMessageQueue* message_queue;
     NotificationApp* notification;
     Gui* gui;

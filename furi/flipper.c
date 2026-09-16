@@ -43,6 +43,7 @@ static void flipper_print_version(const char* target, const Version* version) {
 
 #include <applications/main/archive/helpers/archive_favorites.h>
 #include <bt/bt_service/bt_keys_filename.h>
+#include <bt/bt_service/bt.h>
 #include <bt/bt_settings_filename.h>
 #include <desktop/desktop_keybinds_filename.h>
 #include <desktop/desktop_settings_filename.h>
@@ -144,6 +145,13 @@ void flipper_mount_callback(const void* message, void* context) {
 
         // TODO: Need to restart services that already applied previous name
         namespoof_init();
+        // BLE may have started before the SD card was mounted. Recreate the
+        // serial profile so GAP and the advertisement use the loaded identity.
+        if(furi_record_exists(RECORD_BT)) {
+            Bt* bt = furi_record_open(RECORD_BT);
+            bt_profile_restore_default(bt);
+            furi_record_close(RECORD_BT);
+        }
 
         // TODO: If new SD doesn't contain all current settings IDs, values
         // from previous SD are kept for these settings
@@ -189,6 +197,8 @@ void flipper_init(void) {
         Storage* storage = furi_record_open(RECORD_STORAGE);
         if(storage_sd_status(storage) != FSE_OK) {
             FURI_LOG_D(TAG, "SD Card not ready, skipping early init");
+            // Establish the stable default BLE identity before services start.
+            namespoof_init();
             // Init on SD insert done by storage using flipper_mount_callback()
         } else {
             // Workaround to avoid double load on boot but also have animated boot screen

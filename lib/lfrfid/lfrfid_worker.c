@@ -155,7 +155,7 @@ void lfrfid_worker_stop_thread(LFRFIDWorker* worker) {
 bool lfrfid_worker_check_for_stop(LFRFIDWorker* worker) {
     UNUSED(worker);
     uint32_t flags = furi_thread_flags_get();
-    return flags & LFRFIDEventStopMode;
+    return flags & (LFRFIDEventStopMode | LFRFIDEventStopThread);
 }
 
 size_t lfrfid_worker_dict_get_data_size(LFRFIDWorker* worker, LFRFIDProtocol protocol) {
@@ -171,6 +171,12 @@ static int32_t lfrfid_worker_thread(void* thread_context) {
         if(flags != (unsigned)FuriFlagErrorTimeout) {
             // stop thread
             if(flags & LFRFIDEventStopThread) break;
+
+            // The wait consumes all pending flags, including a stop queued with a start.
+            if(flags & LFRFIDEventStopMode) {
+                worker->mode_index = LFRFIDWorkerIdle;
+                continue;
+            }
 
             // switch mode
             if(flags & LFRFIDEventRead) worker->mode_index = LFRFIDWorkerRead;

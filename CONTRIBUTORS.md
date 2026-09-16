@@ -1,0 +1,1333 @@
+# Recorded contributors
+
+Names are taken from author fields and Co-authored-by trailers in reachable firmware and external-app Git history. Emails are omitted; spelling variants are retained. Historical contribution does not imply authorship of every current file or endorsement. Imported code, libraries, assets and binaries may have authors absent from Git history. See [CREDITS.md](CREDITS.md) and the [component inventory](documentation/third_party_attributions.md).
+
+## Firmware
+
+- 0wlyW00d
+- 0xchocolate
+- 47LeCoste
+- 956MB
+- A0i
+- aanper
+- Aaron Tulino
+- Aaron Tulino (Aaronjamt)
+- Adam Boeglin
+- adisbladis
+- Aerosnail
+- agarof
+- agathakazar
+- Aholicknight
+- Akiva-Cohen
+- Albert Kharisov
+- ALEEF02
+- Aleksandr Kutuzov
+- Aleksandr Skoriy
+- Aleksandr Zhytnyk
+- Alessandro Rossi
+- Alex Berkowitz
+- Alex Kulagin
+- Alex Zaitsev
+- Alexander Bays
+- Alexandre Díaz
+- Alexandre L
+- Alexei Humeniy
+- Alexey 'Cluster' Avdyukhin
+- Alexey Zakharov
+- AlexeyOplachko
+- AloneLiberty
+- Alpha
+- amec0e
+- Amy Grace
+- an4tur0r
+- an5t
+- andr0423
+- Andre
+- Andrea Maugeri
+- Andrea Sacchi
+- Andrei Fominykh
+- Andrew
+- Andrey Zakharov
+- Angel
+- ankris812
+- Anna Antonenko
+- Anna Prosvetova
+- Anthony Ford
+- Anton Chistyakov
+- Ari Bytyqi
+- Arman Yeghiazaryan
+- Arthur Braghetto
+- Ashe Sterling
+- assasinfil
+- Astra
+- astrid rowland
+- Astro
+- Augusto Zanellato
+- Avery
+- Axum
+- Banana Blue
+- BarTender NZ
+- bernouilli
+- Björn Kimminich
+- Blaine Murphy
+- Brandon Weeks
+- Cade
+- CaitSith2
+- Cassandra
+- Cathy Nguyen
+- Chonk_m
+- Chris Pressland
+- Chris van Marle
+- christhetech131
+- chrostino
+- Clara K
+- ClaraCrazy
+- Clashlab
+- clashlab
+- clipboard1
+- Cloudy261
+- Cody Tolene
+- Colin Grady
+- ComputerCarsten
+- Comrade Orion
+- Connor Quick
+- core glitch
+- coreglitch
+- Cory Parker
+- Daniel
+- Daniel Carvallo
+- Daniel Isenhower
+- Daniel Solmann
+- Daniel Statzner
+- Daniel Tse
+- Danil Kalashnikov
+- DanyaE
+- darmiel
+- daubsi
+- David
+- David Coles
+- David Lee
+- Demae
+- Denys Andriushchenko
+- dependabot[bot]
+- Der Skythe
+- Derek Jamison
+- DerSkythe
+- derskythe
+- DEXV
+- dexv
+- DF
+- Dig
+- Dimitry
+- djsime1
+- Dmitry Eroshenko
+- Dmitry Pavlov
+- Dmitry Zinin
+- Dmitry422
+- dogtopus
+- Dom
+- DoniyorI
+- doomwastaken
+- DrEverr
+- DrunkBatya
+- DrZlo13
+- Dusan Hlavaty
+- Dustin Willis Webber
+- Dyiing
+- Dzhos Oleksii
+- Eczbek
+- Eduardo Novella
+- Egor Koleda
+- ElectronicsInFocus
+- Emanuele Conti
+- Emily Trau
+- Emmanuel Ferdman
+- EncryptedFeta
+- end-me-please
+- Eng1n33r
+- EntranceJew
+- Equip
+- Eric Betts
+- erikj95
+- ESurge
+- Ethanol0001
+- Eugene Kirzhanov
+- Evgenii Tereshkov
+- Evgeny E
+- Evgeny Stepanischev
+- facu
+- Fasjeit
+- fatale69
+- Fedor Indutny
+- Filipe Paz Rodrigues
+- FireFly7386
+- Flipper Zelebro
+- FlipperZelebro
+- Florian Grousset
+- fominykhandrei
+- Foul
+- Francesco Pompò
+- Francis
+- Francois Marier
+- freehuntx
+- Félix Legrelle
+- g3gg0
+- g3gg0.de
+- Gabe
+- Gabe Chai
+- Gabriel Cirlig
+- GameLord2011
+- Gana (@G4N4P4T1)
+- Ganapati
+- Gary
+- Georgii Surkov
+- ghettorce
+- Giacomo Ferretti
+- gid9798
+- github-actions
+- github-actions[bot]
+- glebmashanov
+- glitchcore
+- gornekich
+- GreenBean
+- grvpvl
+- gsp8181
+- Guacamolie
+- Guido Giorgi
+- GuruSteve
+- gushmazuko
+- Gustavo de León
+- h00die
+- hakuyoku2011
+- Haoxi Tan
+- hardcod3d
+- Haseo
+- haw8411
+- HaxSam
+- hazardousvoltage
+- head47
+- hedger
+- Henry
+- Henry Pauli
+- Henry Paulissen
+- HexPandaa
+- hiennek
+- HiennNek
+- Himura Kazuto
+- Honghao Zeng
+- HTotoo
+- huc
+- Hugo Blanc
+- Hugo Grostabussiat
+- huuck
+- Ian Milan
+- ianegordon
+- Igor Baranov
+- Igor Danilov
+- Ikko Eltociear Ashimine
+- ImprovingRigmarole
+- imsneo
+- IRecabarren
+- its your bedtime
+- itsweekly
+- Ivan Barsukov
+- Ivan Podogov
+- Jack Doan
+- Jack Webb-Heller
+- Jacob Witt
+- James Ide
+- jamisonderek
+- Jan Wiesemann
+- Jan-Stefan Janetzky
+- Jaroslav Mraz
+- Jaroslav Nesterov
+- jaroslavmraz
+- Jauder Ho
+- jay candel
+- JayDee Raymaker
+- jaylikesbunda
+- jbohack
+- Jean LE QUELLEC
+- Jeremy Cooper
+- Jeremy Mathews
+- Jeremy Stashewsky
+- jl1990
+- jlaughter
+- Johannes Mittendorfer
+- John
+- John Scarfone
+- johnvizzz
+- Josh First of His Name, breaker of builds
+- JuanJakobo
+- JuicyPigWalker
+- Justin Nesselrotte
+- kallanreed
+- Kara Zajac
+- Kassim
+- Kate Temkin
+- Kavitate
+- Kevin
+- Kevin Kwok
+- Kevin Wallace
+- knrn-ai
+- knrn64
+- konerini
+- Konstantin Volkov
+- KorDen
+- koterba
+- Kowalski Dragon
+- Kowalski Dragon (kowalski7cc)
+- Kowlin
+- Kris Bahnsen
+- krolchonok_z
+- KRukus9
+- Krzysztof Haładyn (krzys_h)
+- Krzysztof Zdulski
+- Kuronons
+- Kyhwana Pardus
+- lauaall
+- Lee-Roy King
+- Leeroy
+- Leo Smith
+- Leonid Meleshin
+- Leopold
+- Leptopt1los
+- leptoptilos
+- Lesha Lomalkin
+- Lewis Westbury
+- Liam Droog
+- Liam Hays
+- Lincoln
+- Linn Dahlgren
+- LionZXY
+- Logan McKenna
+- Logandev_
+- lokiuox
+- LordMZTE
+- Louis D
+- LTVA1
+- Luc
+- Lucifer
+- Luis Mayo Valbuena
+- Luke Williams
+- Luu
+- LY2NEO
+- m-xim
+- m7i-org
+- Maksim
+- Maksim Derbasov
+- Mancha
+- MangoTornado
+- MarcelSchm
+- Marek Veselý
+- Mathie
+- Matt Van Zanten
+- Matthew
+- MatthewKuKanich
+- matthisc
+- Matvey Gerasimov
+- Max
+- Max Andreev
+- Max Lapan
+- Maxwell Pray
+- Mayco
+- Mekare
+- Methodius
+- Mewa
+- mi-lrn
+- Michael Huebler
+- Michael Marcucci
+- Michal Suchánek
+- micolous
+- Mihai
+- Mikhail Cheshkov
+- Milk-Cool
+- minchogaydarov
+- MizumasuShoichi
+- MMX
+- mothball187
+- Mr. Proxy
+- MrDaGree
+- MuddledBox
+- mvanzanten
+- MX
+- mxcdoam
+- Mykhailo Shevchuk
+- n.minaylov
+- n30f0x
+- Nameless
+- nanodesu
+- nas
+- Nathan N
+- Nathan Nye
+- Nathan Perry
+- Nathaniel Struselis
+- Nemanja Nedeljković
+- Nick Mooney
+- Nick Shaw
+- Nico Hagelberg
+- Nicolas Marie-Magdelaine PhD
+- Nikita Beletskii
+- Nikita Eshkeev
+- Nikita Vostokov
+- Nikolay Marchuk
+- Nikolay Minaylov
+- nminaylov
+- Noam Drong
+- noproto
+- NotLukas
+- Null
+- nullableVoidPtr
+- oldip
+- Oleg K
+- Oleg Kalachev
+- Oleg Moiseenko
+- Oleg Schwann
+- Ondřej Nový
+- p0ns
+- p3ngu19z
+- p4p1
+- Pablo Mazzini
+- Patrick Cunningham
+- Patrick Kilter
+- Patrick Pelissier
+- Patrik Burleson
+- Patrizio Bekerle
+- Pavel Kulyov
+- Pavel Zhovner
+- pborsutzki
+- peoblouk
+- Perry Fraser
+- perspecdev
+- Peter Seprus
+- Petr Portnov &#124; PROgrm_JARvis
+- PharoahCoder
+- philicious
+- phreakocious
+- Pierce
+- Pinball3D
+- Piyamate Wisanuvej
+- plgcoder
+- porta
+- PpHd
+- prinze77
+- Protik Banerji
+- quantum-x
+- quen0n
+- r3df0xx
+- Radek Pilar
+- Raymond Lucke
+- RebornedBrain
+- rf-bandit
+- Robin Gareus
+- RocketGod
+- Rodrigo Basoalto
+- RogueMaster
+- Roland Kammerer
+- Rom1
+- Roman Belyakovsky
+- Roman Shchekin
+- Round-Pi
+- ru-asdx
+- Ruben van Baarle
+- rusdacent
+- Ruslan Nadyrshin
+- ry4000
+- Ryan Murphy
+- Ryan Peel
+- Sam Edwards
+- Samar Sunkaria
+- Samuel Stauffer
+- Samuel Yvon
+- Sanghee Park
+- Sasha Sovenko
+- Satire
+- scaff.walker
+- Sean Skyhawk
+- Sebastian Mauer
+- Sergei Gavrilov
+- Sergey Gavrilov
+- Sergey Monchenko
+- SG
+- Shane Synan
+- shevv
+- Shukai Ni
+- SHxKenzuto
+- Sil
+- Sil 333033
+- Sil333033
+- Silent
+- SkeletonMan03
+- SkorP
+- Skorpionm
+- Slavik Nychkalo
+- Smooklu
+- sommermorgentraum
+- Soren
+- Spooks
+- Spooks4576
+- sqlsquirreltm
+- StellarStoic
+- Stephen Kent
+- Struan
+- Struan Clark
+- suaveolent
+- SUMUKH
+- superKoder
+- Synthethics
+- Szymon Lisowiec
+- Sören
+- t0m1o1
+- TalkingSasquach
+- TasmanDevil
+- technobulb
+- ted-logan
+- Thea Juna Schwanke
+- theeogflip
+- Thibaut CHARLES
+- thomas
+- Thomas N
+- Thomas Nemer
+- Thomas Roth
+- Tibor Tálosi
+- Tiernan
+- Tiernan Messmer
+- TijnMertens
+- Tobias Jost
+- Tolly Hill
+- TollyH
+- Tom H
+- Tom Samstag
+- tomellens
+- tomholford
+- Tony Freeman
+- tonyfreeman
+- Totoo
+- tototo31
+- TQMatvey
+- Travis Montoya
+- twisted-pear
+- twisted_pear
+- Tyler Crumpton
+- UberGuidoZ
+- ushastoe
+- usiegl00
+- Vadim
+- Vadim Kaushan
+- valentinegb
+- Valera Olexienko
+- Valeria Aquamine
+- Vasyl "vk" Kaigorodov
+- Vencislav Atanasov
+- Veronika Baranova
+- Veronika Kossmann
+- VerstreuteSeele
+- Victor
+- Victor Nikitchuk
+- Violet Shreve
+- Vitaliya Chumakova
+- Vlad Roskov
+- Vladimir
+- Vri
+- VVX7
+- Vyacheslav Tumanov
+- Walter Doekes
+- WatskeBart
+- wetj
+- wh00hw
+- Wild Rat
+- Willy-JL
+- WillyJL
+- wooferguy
+- wosk
+- Wotori
+- Wyatt Neal
+- xAstroBoy
+- xMasterX
+- xtruan
+- YaBa
+- yan0f
+- yappr3
+- Yiiii
+- Yoanndp
+- yocvito
+- Yoel
+- Yukai Li
+- Z3BRO
+- Zachary Weiss
+- Zeus Ricote
+- Zinong Li
+- Zoë Prosvetova
+- Žiga Deisinger
+- Лень :)
+- Никита Тимофеев
+- あく
+- 小兽兽
+
+## External applications
+
+- 0mega
+- 0w0mewo
+- 0xchocolate
+- 10697207+xMasterX@users.noreply.github.com
+- 3n3a
+- 47LeCoste
+- 5unr153
+- aanper
+- Aaron Mavrinac
+- Aaron Tulino
+- Aaron Tulino (Aaronjamt)
+- abcMarcus
+- Abel Chaka
+- AbeNaws
+- Abner
+- acegoal07
+- Adam Boeglin
+- adisbladis
+- AEtherC0r3
+- agathakazar
+- Agis Zisimatos
+- aider (gpt-4o)
+- akopachov
+- Alan
+- Alan  Silva
+- Alan Silva
+- Alan Tsui
+- Albert Kharisov
+- albezanc
+- Alejandro
+- Aleksandr Kutuzov
+- Aleksey Korolev
+- Alesis124
+- Alessandro Di Nepi
+- Alex
+- Alex Hoffman
+- Alex Kulagin
+- Alex Novikov
+- alex-vg
+- alex.kopachov
+- Alex4386
+- Alexande B
+- Alexander Bays
+- Alexander Kopachov
+- Alexander Metzger
+- Alexander Sparkowsky
+- Alexander Voronov
+- Alexandre Díaz
+- Alexei Humeniy
+- AlexeyOplachko
+- Alexis Duque
+- alfie65536
+- AloneLiberty
+- Amaryllis Kulla
+- anakod
+- andr0423
+- Andrea Micheloni
+- Andrea Sacchi
+- Andrei Fominykh
+- Andrew Hnilica
+- anfractuosity
+- Angel
+- Anna Antonenko
+- Anna Oake
+- Anna porta Antonenko
+- Anna Prosvetova
+- Anthony Brice
+- Antiklesys
+- antirez
+- Anton Chistyakov
+- Anton Stadie
+- Anton Todorov
+- Antonio Murdaca
+- arag0re
+- arag0re.eth
+- arha
+- Ari Bytyqi
+- Aria Burrell
+- Arman Yeghiazaryan
+- Armando Visconti
+- Armin
+- Armin Ziaei
+- armixz
+- Arrow A
+- Artur Mądrzak
+- Astra
+- Astro
+- asund
+- Augusto Zanellato
+- aureli1c
+- Aurelius Rosenbaum
+- Austin
+- Avery
+- Avi
+- Ayden
+- baalpeteor2
+- Banachewicz
+- BenArtes
+- Benedikt-Alexander Mokroß
+- Benjamin Martens
+- Benjamin Valentin
+- Bent Hillerkus
+- bettse
+- bigbrodude6119
+- bighack
+- Björn Kimminich
+- Blaine Murphy
+- BlueChip
+- Bob
+- Bob Matcuk
+- BocamoCM
+- Bogdan Dumitrescu
+- Borja
+- Bosch Sensortec
+- BoschSensortec
+- Brandon Weeks
+- Brickleberry19
+- BySepa
+- Carlo Grisetti
+- Cathy Nguyen
+- cepetr
+- ch4istO
+- Chaka
+- Charayaphan Nakorn Boon Han
+- Charles The Great
+- Chen Lijun
+- Chleba
+- Chris Morgan
+- Chris Thornton
+- Chris van Marle
+- ChrisD0lpgr3n
+- CinderSocket
+- Ciu-Zhienki
+- Clara K
+- Claude
+- Claude Opus 4.5
+- Claude Opus 4.6
+- Clemens Zangl
+- Cody Tolene
+- ComputerCarsten
+- Comrade Orion
+- CookiePLMonster
+- cool4uma
+- cooler
+- coolerUA
+- Copilot
+- copilot-swe-agent[bot]
+- core glitch
+- coreglitch
+- crapbass
+- Cristian Libotean
+- cthuwu
+- Cyril
+- d-el
+- daggy
+- dagnazty
+- dangerous-tac0s
+- Dani
+- Daniel Carvallo
+- Daniel Isenhower
+- Daniel Skowroński
+- Daniel Solmann
+- Daniel Tse
+- Daniel-dev-s
+- Daniil Turaev
+- Danil Kalashnikov
+- DanyaE
+- darkprof
+- Darryn Cull
+- David
+- David Christle
+- David Coles
+- David Drinn
+- David Lee
+- DavidKorczynski
+- Dawid Marszałkiewicz
+- deepsource-autofix[bot]
+- deki
+- Denis Nelubin
+- Denis Radolin
+- denis_krasutski
+- DenisKrasutsi
+- denr01
+- Denr01
+- Denys Kuzmenko
+- dependabot[bot]
+- Der Skythe
+- Derek Jamison
+- DerSkythe
+- derskythe
+- dev
+- DEXV
+- DF
+- Die Maxxing
+- Dig
+- dimat
+- Dimitris Fotis Sakellariou
+- Dirk Kaar
+- Djordje Nedic
+- Dmitrii Shcherbakov
+- Dmitry Eroshenko
+- Dmitry Matyukhin
+- Dmitry Pavlov
+- Dmitry Zinin
+- DocSystem
+- dogtopus
+- Dom
+- DonneyF
+- doomwastaken
+- Dr. PO
+- DroomOne
+- DrunkBatya
+- DrZlo13
+- ds.shevelev
+- dunaevai135
+- Dzarda7
+- Dzhos Oleksii
+- Edouard Vincent
+- Edyta
+- Eero Prittinen
+- Eketh
+- ElectronicsInFocus
+- emfleak
+- Emilien Breton
+- Emily Trau
+- end-me-please
+- Equip
+- Erhan
+- Erhan Kurubas
+- Eric Betts
+- eried
+- Erik Alm
+- Erjan Kalybek
+- Erwin Ried
+- espressif-bot
+- Esteban Fuentealba
+- ESurge
+- Ethanol0001
+- Etienne Sellan
+- Eugene Kirzhanov
+- Evgeni Genchev
+- Evgenii Tereshkov
+- Evgueni Souleimanov
+- evilsquid888
+- expected-ingot
+- ExPLIT
+- Ezhil Mani R
+- F. St
+- Father Divine
+- FBI VAN
+- Fedor Indutny
+- Felix Pankratz
+- Fernando Urbina
+- Ferrazzi
+- Firefox2100
+- fominykhandrei
+- Foul
+- Francis
+- Francois Marier
+- Frank Singleton
+- Frederik Schwarzer
+- frux
+- frux-c
+- Frédéric
+- g3gg0
+- g3gg0.de
+- Gabe Chai
+- Gabriel Arjones
+- Gary
+- gdpinchina
+- gebeto
+- Geert Wirken
+- Georgi Georgiev
+- Georgii Surkov
+- Gerald McAlister
+- GGORG
+- ghettorce
+- Giacomo Ferretti
+- gid9798
+- Giraut
+- GitHub Actions
+- glitchcore
+- GooseDev72
+- goosedev72-projects
+- gooseprjkt
+- gornekich
+- grafalex82
+- GrafOrlok
+- Gregor Hermani
+- gudnimg
+- Guido Giorgi
+- Guillaume COURTOT
+- gullradriel
+- GuruSteve
+- Guðni Már Gilbert
+- Göktuğ Yeşilyurt
+- H4W9
+- Haisenteck
+- haisenteck
+- HappyAmos
+- Harry O Brien
+- Harry O'Brien
+- haw8411
+- HaxSam
+- head47
+- Hector PHARAM
+- hedger
+- Henry
+- Henry Gabryjelski
+- Henry Pauli
+- Henry Paulissen
+- Henry Wilkinson
+- HexPandaa
+- HiennNek
+- Himura Kazuto
+- Hish15
+- HonestLocksmith
+- HTotoo
+- Hummus
+- ianegordon
+- Igor Baranov
+- Igor Bespalov
+- Igor Danilov
+- Ihar Biaspalau
+- iJustMadeIt
+- Ikko Eltociear Ashimine
+- Illogico
+- improving-rigmarole
+- ImprovingRigmarole
+- Inujel
+- invalidna-me
+- its your bedtime
+- itsweekly
+- Ivan
+- Ivan Barsukov
+- Ivan Grokhotkov
+- Ivan Podogov
+- J
+- Jack Doan
+- Jack Webb-Heller
+- Jake Nelson
+- James Ide
+- Jan Ciger
+- Jan Petrik
+- Jan Wieck
+- Jan Wiesemann
+- Janat Taerakul
+- Jared Szechy
+- Jaroslav Burian
+- jasniec
+- Jauder Ho
+- jay candel
+- jazn
+- jblanked
+- JBlanked
+- jbohack
+- Jean LE QUELLEC
+- Jeremy Stashewsky
+- Jiacheng Guo
+- Jim Paris
+- JocusSoft
+- Johannes Mittendorfer
+- johlim
+- John Doe
+- John Scarfone
+- johnauld
+- Jonathan Decker
+- Jonathan Hamberg
+- Jonathan-Hamberg
+- jordam
+- Joshinken
+- Joshua Whitley
+- jot7
+- Julien Combattelli
+- Julien JEMINE
+- Julien Staub
+- junghyuneun
+- Just Call Me Koko
+- Justus Perlwitz
+- Jó Ágila Bitsch
+- Kacper
+- Kali
+- Kali Live user
+- karas
+- karasevIA
+- karim
+- Kaspar Schleiser
+- Kassim
+- Kate Case
+- Kate Temkin
+- kazwaztaken
+- Kevin Kwok
+- Kevin Wallace
+- Kirill Korepanov
+- Kirill Kotyagin
+- Kirill Kranke
+- kitsunehunter
+- knrn-ai
+- konerini
+- Konstantin K. Oblaukhov
+- Konstantin Oblaukhov
+- Konstantin Volkov
+- Kosma Moczek
+- Kostas Lekkas
+- Kowalski Dragon
+- Kowalski Dragon (kowalski7cc)
+- Kowlin
+- Kribesk
+- Kris Bahnsen
+- Kronos2308
+- Krulknul
+- Krzysztof Haładyn (krzys_h)
+- Krzysztof Sakowski
+- Krzysztof Zdulski
+- Kyhwana Pardus
+- Kyle Manna
+- lauaall
+- Lazar Čovs
+- Lee-Roy King
+- Leeroy
+- leha-bot
+- Leo Smith
+- Leopold
+- Leptopt1los
+- leptoptilos
+- Lesha Lomalkin
+- Levan Velijanashvili
+- Lewis Westbury
+- Liam Droog
+- Liam Hays
+- limbo111111
+- Lincoln
+- Linus Nielsen
+- LionZXY
+- Lior Weissman
+- Lizard
+- lmainardi-life
+- Logandev_
+- Lokno Ketchup
+- Lokno Ketchup Decker
+- Louis D
+- LTVA1
+- Lucas Oliveira
+- Luke Williams
+- Luna Hart
+- Lupin
+- Luu
+- lvitya
+- m7i
+- ma11
+- Madman10K
+- Maksim
+- Maksim Derbasov
+- MangoTornado
+- Marc Mikolits
+- Marek Matej
+- Martin Valik
+- Martin Válik
+- Mathie
+- Mattar B
+- Matthew
+- Matthew Weger
+- MatthewKuKanich
+- Matthias Pfefferle
+- Matty Jorgensen
+- Matvey Gerasimov
+- Max Andreev
+- Max Lapan
+- Maxime JOURDAN - XANTHIO
+- Maxime Vincent
+- Maybe Ai?
+- Mayco
+- mek-x
+- mek_x
+- Methodius
+- Mewa
+- miccayo
+- michael
+- Michael Baisch
+- Michael Huebler
+- Michael Marcucci
+- Michal Suchánek
+- Mike Purvis
+- Mikhail Cheshkov
+- Mikhail G
+- Mikhail G.
+- Mikhail Gubenko
+- Milk-Cool
+- misterwaztaken
+- mlodawy
+- MMX
+- moker
+- Moon-Byeong-heui
+- Mr. Proxy
+- MrDaGree
+- MuddledBox
+- MX
+- Mykhailo Shevchuk
+- Myte
+- n.minaylov
+- n30f0x
+- nas
+- Nathan Knotts
+- Nathan N
+- Nathan Nye
+- Nathan Phillips
+- Nem0oo
+- nem0oo
+- Nemanja Nedeljković
+- Nick Jones
+- NIK\nickw
+- Nikita Beletskii
+- Nikita Eshkeev
+- Nikita Kulikov
+- Nikita Vostokov
+- Nikolay Minaylov
+- nitepone
+- nminaylov
+- nmrr
+- Noah Pendleton
+- Noam Drong
+- Noiob
+- noproto
+- Nycz
+- o7-machinehum
+- ObKo
+- Offreds
+- Oleg K
+- Oleg Kalachev
+- Oleg Logvinov
+- Oleg Moiseenko
+- Oleg Schwann
+- Oleksandr Masliuchenko
+- Oleksii Kutuzov
+- Oliver Fabel
+- Omkar Yadav
+- orhaneee
+- OrionW06
+- p4p1
+- Pascal Gafner
+- Patrick Cunningham
+- Patrick Edwards
+- Patrick Wang
+- Paul
+- Pavel Kulyov
+- Pavel Zhovner
+- Pavlo Taranov
+- pavlot
+- PCo
+- Perry Fraser
+- perspecdev
+- Peter LoVerso
+- Peter Seprus
+- Petr Portnov &#124; PROgrm_JARvis
+- phreakocious
+- Pierce
+- plasticuproject
+- Play2BReal
+- polioan
+- porta
+- portalsoup
+- pr3!
+- ProteanReverie
+- pymaximus
+- pzrnqt1vrss
+- QtRoS
+- quantum-x
+- quen0n
+- Ray
+- Raymond Lucke
+- RaZe
+- rdefeo
+- RebornedBrain
+- regaly
+- Renaud Cerrato
+- RIcePatrol
+- Riley Haffner
+- Robert Menes
+- Roberto Salgado
+- Robin Mueller
+- Robin.Mueller
+- RocketGod
+- RogueMaster
+- Roland Dobai
+- Roland Kammerer
+- Rom1
+- Roman Belyakovsky
+- Roman Shchekin
+- roman.storozhenko
+- Rory O Hayes
+- Round-Pi
+- Rrycbarm
+- Ruben van Baarle
+- Rudolf Macek
+- rusdacent
+- Ruslan Nadyrshin
+- ry4000
+- ryan
+- Ryan Eisworth
+- Ryan Murphy
+- Ryan Pavlik
+- Ryan Walker (machinehum)
+- s1lly
+- Salvatore Sanfilippo
+- Sam Edwards
+- Sami Alaoui
+- Samuel H
+- Samuel Marchal
+- Samuel Stauffer
+- Samuel Yvon
+- Sandro Kalatozishvili
+- Sanghee Park
+- Sanjay Govind
+- saopsig
+- sc
+- Sean Wilson
+- Sebastian Mauer
+- Seger End
+- Seger Endendijk
+- SegerEnd
+- Sergei Gavrilov
+- Sergei Silnov
+- Sergey Gavrilov
+- Sergey Monchenko
+- Serhii Tsymbaliuk
+- Seth Gregory
+- SG
+- shalebridge
+- Shane Synan
+- Shehab Attia
+- shevv
+- shininghero
+- shiona
+- Shukai Ni
+- Silent
+- Simon Doppler
+- Simone Ruffini
+- SimplyMinimal
+- SkeletonMan03
+- SkorP
+- Skorpionm
+- skt041959
+- Skurydin Alexey
+- Slavik Nychkalo
+- slide333333
+- Smarten7
+- Smooklu
+- sophie
+- Spacefish
+- SpenserCai
+- spheeere98
+- Spooks
+- sqlsquirreltm
+- Stanislav Vasilev
+- Stefano Delbosco
+- Stephen Kent
+- Steven Boger
+- Steven Sloboda
+- STMicroelectronics
+- Struan
+- Struan Clark
+- Sylvio Alves
+- Szymon Lisowiec
+- T0F1Q2007
+- t0m1o1
+- Taffy
+- tcpassos
+- Th3Un1q3
+- the1anonlypr3
+- theageoflove
+- TheSainEyereg
+- Thibaut CHARLES
+- Thomas Karl Pietrowski
+- Thomas Rix
+- Thomas Roth
+- Thorsten Godau
+- Tibor Tálosi
+- Tiernan
+- Tiernan Messmer
+- TijnMertens
+- Tim Gates
+- Tim Strasser
+- Timofey Dovgal
+- timstrasser
+- Timur Taipov
+- tobozo
+- TollyH
+- Tom Chen
+- Tom Jason Schwanke
+- Tom Samstag
+- Tomas Borcin
+- Tommy Chiang
+- Tony Freeman
+- tonyfreeman
+- tototo31
+- TQMatvey
+- Travis Montoya
+- twisted_pear
+- Tyler Anderson
+- Téo Humeau
+- U-ATSAUVS\heath.raftery
+- UberGuidoZ
+- Uilian Ries
+- Ujhhgtg
+- usiegl00
+- vad7
+- Vadim
+- Vadim Kaushan
+- valentinegb
+- Valeria Aquamine
+- Vasyl "vk" Kaigorodov
+- Victor
+- Victor Nikitchuk
+- Victor Zhestkov
+- Vincent Hamp
+- Vitaliya Chumakova
+- Vlad Roskov
+- Vladimir
+- Vladimir Kondenko
+- Vladimir Petrigo
+- Vladimir Stolyarov
+- vladin79
+- Vri
+- VVX7
+- Vyacheslav Tumanov
+- Walter Doekes
+- Wenrui LI
+- wh00hw
+- Wiktor Kwapisiewicz
+- Wild Rat
+- Willy-JL
+- WillyJL
+- Willzvul
+- woob
+- wosk
+- Wu Tingfeng
+- wuzhenghui
+- Wyatt Neal
+- x27
+- xAstroBoy
+- Xavier
+- xgroleau
+- Xiang Xiao
+- xieqinan
+- Xorboo
+- xtruan
+- yan0f
+- Yaroslav Nychkalo
+- Yegor Yefremov
+- Yiiii
+- Yoanndp
+- Your Name
+- Yukai Li
+- Zachary Weiss
+- zero-mega
+- Zinong Li
+- zinongli
+- Zoë Prosvetova
+- zuurdo
+- Žiga Deisinger
+- Виктор Никитчук
+- Лень :)
+- Никита Тимофеев
+- あく
+- 五河 琴里

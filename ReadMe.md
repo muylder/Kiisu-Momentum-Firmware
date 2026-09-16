@@ -85,11 +85,14 @@ When [reporting a problem](https://github.com/muylder/Kiisu-Momentum-Firmware/is
 
 ## Credits and license
 
-This fork builds on the work of:
+This firmware combines work by **Flipper Devices**, **Next-Flip / Momentum**, **HiennNek / Kiisu-MNTM**, **DarkFlippers / Unleashed**, **kiisu-io**, **twoel / twoelw / 2elw**, and the original authors of its apps, libraries, artwork and fonts.
 
-- [Momentum Firmware / Next-Flip](https://github.com/Next-Flip/Momentum-Firmware).
-- [Kiisu-MNTM / HiennNek](https://github.com/HiennNek/kiisu-mntm).
-- [Unleashed Firmware / DarkFlippers](https://github.com/DarkFlippers/unleashed-firmware) and the wider Flipper/Kiisu contributor community.
-- The authors of the included applications, libraries, and assets.
+Special thanks to [twoelw](https://github.com/twoelw) for **Kiisu Manager**, **Kiisu Sensor Hub**, **Kiisu Companion Bridge** and the **enhanced Kiisu companion firmware**. Component sources and original license references are documented in [CREDITS.md](CREDITS.md).
 
-See [LICENSE](LICENSE) for the repository's GNU GPL v3 license. Included dependencies and assets retain their respective license notices.
+- [Credits by project and component](CREDITS.md), including artwork and fonts.
+- [Recorded contributors](CONTRIBUTORS.md), extracted from firmware and external-app history.
+- [Application authors, pinned dependencies and license/notice index](documentation/third_party_attributions.md).
+
+See [LICENSE](LICENSE) for the repository's GNU GPL v3 license. Third-party components retain their own licenses and copyright notices. This fork claims only its own changes; credits do not imply endorsement.
+
+**Attribution still being verified:** the exact source revisions and licenses for 18 bundled FAPs and one companion binary remain to be mapped. See the [binary provenance inventory](documentation/third_party_attributions.md#bundled-binaries-provenance-still-to-confirm). Listing authors does not by itself resolve distribution-license requirements.

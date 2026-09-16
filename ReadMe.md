@@ -1,175 +1,95 @@
-# Kiisu-MNTM
-### Momentum firmware fork for Kiisu v4b/v4br - with U2F and rolling code support
+# Kiisu Momentum Firmware
 
-> **Note:** Kiisu-MNTM is **not** an official Momentum branch. It is a separate community fork of [Momentum FW](https://github.com/Next-Flip/Momentum-Firmware) for Kiisu.
+Community firmware for **Kiisu v4b/v4br**, combining Momentum and Kiisu-MNTM with Kiisu-specific apps, radio stability changes, and a consistent **Lykoi** default device name.
 
-## Why choose this over other forks?
+This is an independent community fork, not an official Momentum or stock Kiisu release.
 
-- **Up-to-date** - Actively maintained and always in sync with upstream Momentum, plus the latest tweaks and apps from upstream Kiisu FW.
+**Current version:** [`kiisu-compilation`](https://github.com/muylder/Kiisu-Momentum-Firmware/tree/kiisu-compilation) · [Report an issue](https://github.com/muylder/Kiisu-Momentum-Firmware/issues) · [Releases](https://github.com/muylder/Kiisu-Momentum-Firmware/releases)
 
-- **Rolling code & U2F support** - Includes rolling code and U2F support for Kiisu. The firmware covers most rolling code manufacturers from upstream Momentum, but not all. If you find a missing manufacturer key, please [contribute here](https://github.com/HiennNek/non-flipper-rolling-code-support#-missing-keys).
+## Highlights
 
-- **Kiisu assets** - Replaces all Flipper assets with Kiisu branding, unlike the Momentum Kiisu branch or stock Kiisu FW. The original Kiisu assets had minor visual issues (noise, low-res images); this firmware ships with fixed assets redrawn by hand. Found something missing? [Open an issue](https://github.com/HiennNek/kiisu-mntm/issues).
+- **Momentum foundation:** customization, applications, and Kiisu integration inherited from the upstream projects.
+- **Kiisu tools:** [Kiisu Manager](applications/system/kiisu-manager/README.md) for companion MCU settings and [Kiisu Sensor Hub](applications/system/kiisu-sensor-hub/README.md) for compass, motion, temperature, humidity, and light readings. Hardware and companion firmware requirements are documented with each app.
+- **Consistent device identity:** `Lykoi` is the fallback name; saved custom names take precedence. BLE identity is refreshed when the saved name or MAC changes.
+- **BLE stability changes:** bounded RPC transmission waits, conservative initial packet sizes, and fixes for advertising timers and connection parameter negotiation.
+- **NFC and LF RFID changes:** improved event handling, initialization failure handling, and cancellation behavior.
+- **Additional apps:** bundled FAP resources across GPIO, games, infrared, media, NFC, Sub-GHz, tools, and USB, plus custom BLE service/profile code.
+- **Inherited Kiisu-MNTM features:** Kiisu-themed assets, U2F, and rolling-code support. Availability depends on the hardware and protocol; support is not universal.
 
-## How to install
+## Status and limitations
 
-1. Download **`kiisu-mntm_XXXXXXXX_dd-MM-yyyy.tgz`** from [Releases](https://github.com/HiennNek/kiisu-mntm/releases)
-2. Open **qFlipper** or visit [lab.flipper.net](https://lab.flipper.net/)
-3. Select **Install from file** and choose the downloaded file
+This branch contains development changes that still require physical-device validation. Firmware and updater linking were reported successful in the [radio stability notes](documentation/kiisu_radio_stability.md); this does not establish that every app, connection, or tag operation works on every board.
 
-## How to build
+The BLE Hardware Remote app is experimental: it sends a Space key over BLE HID when GPIO A4 is connected to GND. Its current loop has no Back-button exit handler, so restarting the device may be necessary to leave the app.
 
-Clone the repository:
+**No GitHub release packages are currently published in this repository.** Build this branch using the instructions below. Packages from other forks do not necessarily contain these changes. There is no fixed release schedule.
+
+## Build
+
+Clone this branch with its submodules:
 
 ```bash
-git clone --recursive --jobs 8 https://github.com/HiennNek/kiisu-mntm.git
-cd kiisu-mntm/
+git clone --branch kiisu-compilation --recurse-submodules --jobs 8 https://github.com/muylder/Kiisu-Momentum-Firmware.git
+cd Kiisu-Momentum-Firmware
 ```
 
-Flash directly to Kiisu (device must be connected via USB with qFlipper closed):
-
-```bash
-./fbt flash_usb_full
-```
-
-Compile a TGZ package:
+Build a firmware update package on Linux or macOS:
 
 ```bash
 ./fbt updater_package
 ```
 
-Build and launch a single app:
+On Windows PowerShell:
+
+```powershell
+.\fbt.cmd updater_package
+```
+
+Generated files are placed in `dist/f7-C/`, including an update `.tgz` package. The filename suffix depends on the branch, commit, or configured build suffix. See the [build tool documentation](documentation/fbt.md) for prerequisites and additional targets.
+
+To build and install directly over USB, connect the Kiisu and close qFlipper first:
+
+```bash
+./fbt flash_usb_full
+```
+
+On Windows, use `.\fbt.cmd flash_usb_full`.
+
+To build and launch an individual app:
 
 ```bash
 ./fbt launch APPSRC=your_appid
 ```
 
-## FAQ
+## Install a built package
 
-> Don't see your question answered here? [Open an issue](https://github.com/HiennNek/kiisu-mntm/issues).
+1. Back up your SD card files and settings before changing firmware.
+2. Build the `.tgz` package from `kiisu-compilation` as described above.
+3. Connect your Kiisu and open qFlipper.
+4. Choose **Install from file** and select the generated update `.tgz` from `dist/f7-C/`.
+5. After installation, check the device name, Bluetooth connection, and the apps you use.
 
-### Common issues
-<details>
-<summary><b>Screen glitching after installation</b></summary>
-Just restart your Kiisu.
-</details>
-<details>
-<summary><b>Things broke after switching from other firmware (e.g. qFlipper/Flipper Lab shows it as incompatible, etc...)</b></summary>
+If the installer reports incompatible hardware, verify the board revision and package target before proceeding. Include the exact error when reporting an issue.
 
-Delete all files from your SD card (you can still keep captured files/downloaded DB files), then reflash the firmware.
+## Testing and feedback
 
-If you can't flash the firmware using the normal way, try flashing it in DFU mode. (Turn off Kiisu, then hold the `OK` button and plug your Kiisu into your PC. qFlipper and lab.flipper.net will recognize it as DFU mode.)
+The [radio stability validation guide](documentation/kiisu_radio_stability.md) covers BLE reconnects, interrupted transfers, advertising timeouts, SD remounts, and NFC/RFID cancellation and writes.
 
-You can find the DFU file in the latest [releases](https://github.com/HiennNek/kiisu-mntm/releases).
-</details>
-<details>
-<summary><b>Why doesn't U2F work?</b></summary>
-Try deleting all files in <code>SD Card/u2f/</code>. It will regenerate all cert files.
-If it still doesn't work, then you're using an older version of Kiisu that doesn't ship with Kiisu's secret keys.
-</details>
-<details>
-<summary><b>Why can't Sub-GHz copy my remote?</b></summary>
-The upstream firmware might not support your remote.
-If you believe your remote is supported by upstream, check <a href="https://github.com/HiennNek/non-flipper-rolling-code-support#-missing-keys">non-flipper-rolling-code-support</a>.
-Or <a href="https://github.com/HiennNek/kiisu-mntm/issues">open an issue</a>.
-</details>
-<details>
-<summary><b>Windows Defender flags the firmware as a virus</b></summary>
+When [reporting a problem](https://github.com/muylder/Kiisu-Momentum-Firmware/issues), include:
 
-~~Use Linux~~
+- Kiisu board revision and firmware commit or package filename.
+- Steps to reproduce, expected behavior, and actual behavior.
+- Phone/OS and Bluetooth state for connection problems.
+- Tag type and operation for NFC/RFID problems.
+- Crash text or serial logs, if available.
 
-Windows Defender uses AI to scan and detect malware, which might create a false positive.
+## Credits and license
 
-Try using VirusTotal if you don't trust it.
-</details>
+This fork builds on the work of:
 
-### General
+- [Momentum Firmware / Next-Flip](https://github.com/Next-Flip/Momentum-Firmware).
+- [Kiisu-MNTM / HiennNek](https://github.com/HiennNek/kiisu-mntm).
+- [Unleashed Firmware / DarkFlippers](https://github.com/DarkFlippers/unleashed-firmware) and the wider Flipper/Kiisu contributor community.
+- The authors of the included applications, libraries, and assets.
 
-<details>
-<summary><b>What is Kiisu-MNTM?</b></summary>
-
-Kiisu-MNTM is a community-maintained fork of [Momentum Firmware](https://github.com/Next-Flip/Momentum-Firmware) built specifically for the Kiisu device. It adds rolling code and U2F support that aren't available in official Momentum firmware on Kiisu hardware, ships hand-redrawn Kiisu-branded assets, and stays continuously synced with upstream Momentum plus the latest Kiisu-specific tweaks and apps.
-
-</details>
-
-<details>
-<summary><b>Is this an official Momentum or Kiisu firmware?</b></summary>
-
-No. Kiisu-MNTM is **not** an official Momentum branch, and it isn't the stock Kiisu firmware either - it's a separate, independently maintained community fork.
-
-</details>
-
-### Installation & Updates
-
-<details>
-<summary><b>How do I install Kiisu-MNTM?</b></summary>
-
-See above
-
-</details>
-
-<details>
-<summary><b>Can I switch back to stock firmware or another fork later?</b></summary>
-
-Yes - switching is just a matter of flashing a different firmware file the same way, via qFlipper or lab.flipper.net.
-
-</details>
-
-<details>
-<summary><b>How often is it updated?</b></summary>
-
-Weekly. Check the [Releases](https://github.com/HiennNek/kiisu-mntm/releases) page for the latest build.
-
-</details>
-
-### Features
-
-<details>
-<summary><b>What is rolling code support, and why does it matter for Kiisu?</b></summary>
-
-Rolling code is the security scheme used by many garage door openers, gate remotes, and car key fobs, where each transmission uses a new code instead of a static one. Official Flipper firmware needs factory-provisioned keys to handle certain rolling-code protocols - and since Kiisu hardware isn't produced by Flipper Devices Inc., it doesn't ship with those keys. Kiisu-MNTM implements its own support so these protocols work on Kiisu anyway.
-
-</details>
-
-<details>
-<summary><b>Which rolling code manufacturers are supported?</b></summary>
-
-Most of the manufacturers covered by upstream Momentum Firmware, though not all of them.
-
-</details>
-
-<details>
-<summary><b>What if my remote/manufacturer isn't supported?</b></summary>
-
-You can contribute the missing manufacturer key at the companion repo: [non-flipper-rolling-code-support](https://github.com/HiennNek/non-flipper-rolling-code-support#-missing-keys).
-
-</details>
-
-<details>
-<summary><b>What is U2F, and why didn't it work before?</b></summary>
-
-U2F (Universal 2nd Factor) is a hardware authentication standard used for two-factor login. Like rolling code, U2F functionality needs certification that other firmware doesn't ship with - Kiisu-MNTM adds its own support (cert generation) so U2F works on Kiisu.
-
-</details>
-
-<details>
-<summary><b>What's different about the Kiisu-themed assets in this fork?</b></summary>
-
-All visuals are Kiisu-branded rather than Flipper-branded, and the original Kiisu asset set - which had some noise and low-resolution artifacts - has been redrawn by hand to fix those issues.
-
-</details>
-
-### Kiisu-MNTM vs. Other Firmware
-
-<details>
-<summary><b>How is this different from stock Kiisu firmware?</b></summary>
-
-Kiisu-MNTM brings Momentum's broader feature set on top of Kiisu, stays actively synced with upstream, and includes the hand-corrected assets - none of which are part of stock Kiisu firmware.
-
-</details>
-<details>
-<summary><b>How is this different from the official Momentum Kiisu branch?</b></summary>
-
-The official Momentum Kiisu branch doesn't include the hand-redrawn Kiisu assets that Kiisu-MNTM ships with - it still has the original assets' minor visual issues (noise, low-res). Kiisu-MNTM also tracks upstream Momentum closely to stay current.
-
-</details>
+See [LICENSE](LICENSE) for the repository's GNU GPL v3 license. Included dependencies and assets retain their respective license notices.

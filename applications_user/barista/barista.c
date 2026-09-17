@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Project: muylder/Kiisu-Momentum-Firmware. Implementation assisted by AI.
 #include "barista_core.h"
+#include "barista_storage.h"
 #include <furi.h>
 #include <furi_hal.h>
 #include <gui/gui.h>
@@ -14,7 +15,7 @@
 #include <stdlib.h>
 
 #define BARISTA_MAGIC 0xBA
-#define BARISTA_VERSION 2
+#define BARISTA_VERSION 3
 #define BARISTA_SLOT_A APP_DATA_PATH("journal_a.bin")
 #define BARISTA_SLOT_B APP_DATA_PATH("journal_b.bin")
 
@@ -56,10 +57,12 @@ typedef struct {
     bool dirty;
     bool exit;
     bool light_on;
+    bool export_toast;
+    uint32_t export_ticks;
 } BaristaApp;
 
-static const char* const methods_pt[] = {"Espresso", "V60", "AeroPress", "Prensa francesa", "Personalizado", "Chemex", "Kalita Wave", "Clever", "Moka italiana", "Cold brew", "Espresso PI"};
-static const char* const methods_en[] = {"Espresso", "V60", "AeroPress", "French press", "Custom", "Chemex", "Kalita Wave", "Clever", "Moka pot", "Cold brew", "Espresso PI"};
+static const char* const methods_pt[] = {"Espresso", "V60", "AeroPress (Inv)", "Prensa francesa", "Personalizado", "Chemex", "Kalita Wave", "Clever", "Moka italiana", "Cold brew", "Espresso PI", "Hario Switch", "Sifao", "Cezve / Turco", "Phin", "Orea", "Origami", "Tricolate", "Pulsar", "April", "Stagg [X]", "Coador de Pano", "Melitta", "Koar", "Chorreador", "Delter Press", "Gina", "Moka Brikka", "Napolitana", "AeroPress"};
+static const char* const methods_en[] = {"Espresso", "V60", "AeroPress (Inv)", "French press", "Custom", "Chemex", "Kalita Wave", "Clever", "Moka pot", "Cold brew", "Espresso PI", "Hario Switch", "Siphon", "Ibrik / Cezve", "Phin filter", "Orea", "Origami", "Tricolate", "Pulsar", "April", "Stagg [X]", "Cloth Filter", "Melitta", "Koar", "Chorreador", "Delter Press", "Gina", "Moka Brikka", "Neapolitan", "AeroPress"};
 static const char* barista_method_name(const BaristaApp* app, uint8_t method) {
     return (app->data.language == BaristaLanguageEnglish ? methods_en : methods_pt)[method];
 }
@@ -115,24 +118,26 @@ static void barista_draw(Canvas* canvas, void* context) {
     canvas_clear(canvas);
     canvas_set_color(canvas, ColorBlack);
     char text[64];
-    uint8_t method = app->data.selected;
-    const BaristaRecipe* recipe = &app->data.recipes[method];
+    uint8_t selected_recipe = app->data.selected;
+    const BaristaRecipe* recipe = &app->data.recipes[selected_recipe];
+    uint8_t method_id = recipe->method;
     uint32_t total = barista_target(recipe);
     uint32_t elapsed = barista_elapsed(app);
 
     switch(app->screen) {
     case ScreenHome: {
         barista_header(canvas, app->storage_failed ? "BARISTA  SD!" : "BARISTA");
-        uint8_t first = method > 2 ? method - 2 : 0;
-        if(first > BARISTA_METHOD_COUNT - 4) first = BARISTA_METHOD_COUNT - 4;
-        for(uint8_t i = first; i < first + 4; ++i) {
-            barista_row(canvas, 23 + (i - first) * 10, barista_method_name(app, i), i == method);
+        uint8_t first = selected_recipe > 2 ? selected_recipe - 2 : 0;
+        if(app->data.recipe_count >= 4 && first > app->data.recipe_count - 4) first = app->data.recipe_count - 4;
+        for(uint8_t i = first; i < first + 4 && i < app->data.recipe_count; ++i) {
+            const char* name = app->data.recipes[i].name[0] ? app->data.recipes[i].name : barista_method_name(app, app->data.recipes[i].method);
+            barista_row(canvas, 23 + (i - first) * 10, name, i == selected_recipe);
         }
         barista_footer(canvas, barista_text(app, "< guia  OK receita  > diario", "< guide OK recipe > journal"));
         break;
     }
     case ScreenRecipe: {
-        barista_header(canvas, barista_method_name(app, method));
+        barista_header(canvas, recipe->name[0] ? recipe->name : barista_method_name(app, method_id));
         uint8_t first = app->field > 2 ? app->field - 2 : 0;
         for(uint8_t i = first; i < first + 3; ++i) {
             switch(i) {
@@ -167,7 +172,7 @@ static void barista_draw(Canvas* canvas, void* context) {
             }
             barista_row(canvas, 24 + (i - first) * 10, text, i == app->field);
         }
-        snprintf(text, sizeof(text), "%s: %lu.%lu g", method == BaristaEspresso ? "Bebida alvo" : "Agua total",
+        snprintf(text, sizeof(text), "%s: %lu.%lu g", method_id == BaristaEspresso ? "Bebida alvo" : "Agua total",
                  (unsigned long)(total / 10), (unsigned long)(total % 10));
         canvas_draw_str(canvas, 3, 54, text);
         barista_footer(canvas, app->field == 6 ? "OK iniciar   BACK voltar" :
@@ -198,7 +203,7 @@ static void barista_draw(Canvas* canvas, void* context) {
         barista_footer(canvas, barista_text(app, "^v campo  <> cliques  BACK voltar", "^v field  <> clicks  BACK"));
         break;
     case ScreenBrew:
-        barista_header(canvas, app->clock.running ? barista_method_name(app, method) : barista_text(app, "PAUSADO", "PAUSED"));
+        barista_header(canvas, app->clock.running ? recipe->name[0] ? recipe->name : barista_method_name(app, method_id) : barista_text(app, "PAUSADO", "PAUSED"));
         snprintf(text, sizeof(text), "%02lu:%02lu", (unsigned long)(elapsed / 60), (unsigned long)(elapsed % 60));
         canvas_set_font(canvas, FontBigNumbers);
         canvas_draw_str_aligned(canvas, 64, 34, AlignCenter, AlignBottom, text);
@@ -206,13 +211,22 @@ static void barista_draw(Canvas* canvas, void* context) {
         const char* step_name = app->stage < recipe->step_count ? recipe->steps[app->stage].name :
             barista_text(app, "Tempo alvo atingido", "Target time reached");
         canvas_draw_str_aligned(canvas, 64, 43, AlignCenter, AlignBottom, step_name);
-        total = barista_stage_target(method, recipe, app->stage);
-        snprintf(text, sizeof(text), "%s %lu.%lug  %uC", method == BaristaEspresso ? "Saida" : "Ate",
+        total = barista_stage_target(method_id, recipe, app->stage);
+        snprintf(text, sizeof(text), "%s %lu.%lug  %uC", method_id == BaristaEspresso ? "Saida" : "Ate",
                  (unsigned long)(total / 10), (unsigned long)(total % 10), recipe->temperature);
         canvas_draw_str_aligned(canvas, 64, 52, AlignCenter, AlignBottom, text);
         float progress = recipe->seconds ? (float)elapsed / recipe->seconds : 0.0f;
         elements_progress_bar(canvas, 8, 56, 112, progress > 1.0f ? 1.0f : progress);
         barista_footer(canvas, app->clock.running ? "OK pausa  > fim  BACK cancela" : "OK retoma  > fim  BACK cancela");
+        
+        // Draw Animated Coffee Cup in the top right corner
+        canvas_draw_frame(canvas, 105, 16, 16, 14); // Cup body
+        canvas_draw_line(canvas, 106, 30, 119, 30); // Cup bottom
+        canvas_draw_frame(canvas, 121, 18, 4, 8); // Cup handle
+        uint8_t fill_h = (uint8_t)((progress > 1.0f ? 1.0f : progress) * 12.0f);
+        if (fill_h > 0) {
+            canvas_draw_box(canvas, 106, 30 - fill_h, 14, fill_h); // Coffee fill
+        }
         break;
     case ScreenAbort:
         barista_header(canvas, "Descartar preparo?");
@@ -222,7 +236,7 @@ static void barista_draw(Canvas* canvas, void* context) {
         break;
     case ScreenResult:
         barista_header(canvas, "Preparo finalizado");
-        snprintf(text, sizeof(text), "%s  %lu:%02lu", barista_method_name(app, method),
+        snprintf(text, sizeof(text), "%s  %lu:%02lu", recipe->name[0] ? recipe->name : barista_method_name(app, method_id),
                  (unsigned long)(app->result.elapsed / 60), (unsigned long)(app->result.elapsed % 60));
         canvas_draw_str(canvas, 3, 25, text);
         snprintf(text, sizeof(text), "Dose %u.%ug x%u / alvo %lu.%lug", recipe->dose / 10, recipe->dose % 10, recipe->servings,
@@ -246,10 +260,20 @@ static void barista_draw(Canvas* canvas, void* context) {
         barista_footer(canvas, "^v campo  <> valor  OK salvar");
         break;
     case ScreenHistory:
+        if(app->export_toast) {
+            if(furi_get_tick() - app->export_ticks < furi_ms_to_ticks(2000)) {
+                canvas_set_font(canvas, FontPrimary);
+                canvas_draw_str_aligned(canvas, 64, 32, AlignCenter, AlignCenter, "Exportado para SD!");
+                break;
+            } else {
+                app->export_toast = false;
+            }
+        }
         barista_header(canvas, app->storage_failed ? "Diario: falha no SD" : "Diario de preparo");
-        if(app->data.count) {
+        if(app->data.history_count) {
             const BaristaEntry* entry = &app->data.history[app->history_index];
-            snprintf(text, sizeof(text), "%u/%u %s", app->history_index + 1, app->data.count, barista_method_name(app, entry->method));
+            const char* entry_name = entry->recipe.name[0] ? entry->recipe.name : barista_method_name(app, entry->method);
+            snprintf(text, sizeof(text), "%u/%u %s", app->history_index + 1, app->data.history_count, entry_name);
             canvas_draw_str(canvas, 3, 24, text);
             uint32_t history_dose = entry->recipe.dose * entry->recipe.servings;
             uint32_t history_ratio = history_dose ? (entry->output * 10 + history_dose / 2) / history_dose : 0;
@@ -298,9 +322,44 @@ static void barista_draw(Canvas* canvas, void* context) {
 static void barista_input(InputEvent* event, void* context) {
     BaristaApp* app = context;
     // Never block the input service on storage or the app thread.
-    if(event->type == InputTypeShort || event->type == InputTypeRepeat) {
+    if(event->type == InputTypeShort || event->type == InputTypeRepeat || event->type == InputTypeLong) {
         furi_message_queue_put(app->input, event, 0);
     }
+}
+
+static void barista_export_csv(BaristaApp* app) {
+    if(!app->data.history_count) return;
+
+    File* file = storage_file_alloc(app->storage);
+    if(storage_file_open(file, EXT_PATH("barista_history.csv"), FSAM_WRITE, FSOM_CREATE_ALWAYS)) {
+        storage_file_write(file, "Method,Date,Dose(g),Target Ratio,Yield(g),Time(s),Rating,Acidity,Body,Sweetness,Bitterness,Finish\n", 99);
+        char buffer[128];
+        for(uint8_t i = 0; i < app->data.history_count; i++) {
+            const BaristaEntry* entry = &app->data.history[i];
+            DateTime date;
+            datetime_timestamp_to_datetime(entry->timestamp, &date);
+            
+            uint32_t history_dose = entry->recipe.dose * entry->recipe.servings;
+            
+            int len = snprintf(buffer, sizeof(buffer), "%s,%04u-%02u-%02u %02u:%02u,%u.%u,1:%u.%u,%u.%u,%lu,%u,%u,%u,%u,%u,%u\n",
+                barista_method_name(app, entry->method),
+                date.year, date.month, date.day, date.hour, date.minute,
+                (unsigned int)(history_dose / 10), (unsigned int)(history_dose % 10),
+                (unsigned int)(entry->recipe.ratio / 10), (unsigned int)(entry->recipe.ratio % 10),
+                (unsigned int)(entry->output / 10), (unsigned int)(entry->output % 10),
+                (unsigned long)entry->elapsed,
+                entry->rating, entry->acidity, entry->body, entry->sweetness, entry->bitterness, entry->finish);
+                
+            storage_file_write(file, buffer, len);
+        }
+        app->export_toast = true;
+        app->export_ticks = furi_get_tick();
+        notification_message(app->notification, &sequence_success);
+    } else {
+        notification_message(app->notification, &sequence_error);
+    }
+    storage_file_close(file);
+    storage_file_free(file);
 }
 
 static void barista_load(BaristaApp* app) {
@@ -385,12 +444,15 @@ static void barista_handle(BaristaApp* app, const InputEvent* event) {
     // Repeat is for navigation/adjustment only, never start/save/stop actions.
     if(event->type == InputTypeRepeat &&
        (key == InputKeyOk || key == InputKeyBack || app->screen == ScreenBrew || app->screen == ScreenAbort)) return;
+    if(event->type == InputTypeLong && !(app->screen == ScreenHistory && key == InputKeyOk)) return;
     switch(app->screen) {
     case ScreenHome:
         if(key == InputKeyUp || key == InputKeyDown) {
-            app->data.selected = (app->data.selected + (key == InputKeyDown ? 1 : BARISTA_METHOD_COUNT - 1)) % BARISTA_METHOD_COUNT;
-            app->dirty = true;
-        } else if(key == InputKeyOk) {
+            if (app->data.recipe_count > 0) {
+                app->data.selected = (app->data.selected + (key == InputKeyDown ? 1 : app->data.recipe_count - 1)) % app->data.recipe_count;
+                app->dirty = true;
+            }
+        } else if(key == InputKeyOk && app->data.recipe_count > 0) {
             app->field = 0;
             app->screen = ScreenRecipe;
         } else if(key == InputKeyRight) {
@@ -469,15 +531,19 @@ static void barista_handle(BaristaApp* app, const InputEvent* event) {
     case ScreenHistory:
         if(key == InputKeyBack) app->screen = ScreenHome;
         else if(key == InputKeyRight && app->storage_failed) app->save_pending = true;
-        else if(key == InputKeyDown && app->history_index + 1 < app->data.count) app->history_index++;
+        else if(key == InputKeyDown && app->history_index + 1 < app->data.history_count) app->history_index++;
         else if(key == InputKeyUp && app->history_index) app->history_index--;
-        else if(key == InputKeyOk && app->data.count) {
-            const BaristaEntry* entry = &app->data.history[app->history_index];
-            app->data.selected = entry->method;
-            app->data.recipes[entry->method] = entry->recipe;
-            app->dirty = true;
-            app->field = 5;
-            app->screen = ScreenRecipe;
+        else if(key == InputKeyOk && app->data.history_count) {
+            if(event->type == InputTypeLong) {
+                barista_export_csv(app);
+            } else if(event->type == InputTypeShort) {
+                const BaristaEntry* entry = &app->data.history[app->history_index];
+                app->data.selected = entry->method;
+                app->data.recipes[entry->method] = entry->recipe;
+                app->dirty = true;
+                app->field = 5;
+                app->screen = ScreenRecipe;
+            }
         }
         break;
     case ScreenHelp:
@@ -535,7 +601,7 @@ int32_t barista_app(void* context) {
         furi_mutex_acquire(app->mutex, FuriWaitForever);
         barista_clock_update(&app->clock, furi_get_tick(), app->frequency);
         bool brewing = app->screen == ScreenBrew || app->screen == ScreenAbort;
-        uint8_t stage = barista_stage(app->data.selected, &app->data.recipes[app->data.selected], barista_elapsed(app));
+        uint8_t stage = barista_stage(app->data.recipes[app->data.selected].method, &app->data.recipes[app->data.selected], barista_elapsed(app));
         bool alert = brewing && stage != app->stage;
         if(brewing) app->stage = stage;
         if(got_input) barista_handle(app, &event);
@@ -544,7 +610,13 @@ int32_t barista_app(void* context) {
         app->save_pending = false;
         furi_mutex_release(app->mutex);
 
-        if(alert) notification_message(app->notification, &sequence_single_vibro);
+        if(alert) {
+            if(stage < app->data.recipes[app->data.selected].step_count) {
+                notification_message(app->notification, &sequence_double_vibro);
+            } else {
+                notification_message(app->notification, &sequence_success);
+            }
+        }
         if(brewing != app->light_on) {
             notification_message(app->notification, brewing ? &sequence_display_backlight_enforce_on : &sequence_display_backlight_enforce_auto);
             app->light_on = brewing;

@@ -14,7 +14,7 @@
 
 #define TAG "FuriHalRtc"
 
-#define FURI_HAL_RTC_LSE_STARTUP_TIME 300
+#define FURI_HAL_RTC_LSE_STARTUP_TIME 20
 
 #define FURI_HAL_RTC_CLOCK_IS_READY() (LL_RCC_LSE_IsReady() && LL_RCC_LSI1_IsReady())
 

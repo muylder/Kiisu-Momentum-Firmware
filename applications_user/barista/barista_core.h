@@ -4,7 +4,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define BARISTA_METHOD_COUNT 11
+#define BARISTA_METHOD_COUNT 30
+#define BARISTA_RECIPE_COUNT 64
 #define BARISTA_HISTORY_COUNT 12
 #define BARISTA_MAX_SECONDS 65535
 #define BARISTA_STEP_COUNT 8
@@ -21,6 +22,25 @@ typedef enum {
     BaristaMoka,
     BaristaColdBrew,
     BaristaEspressoPreinfusion,
+    BaristaHarioSwitch,
+    BaristaSiphon,
+    BaristaIbrik,
+    BaristaPhin,
+    BaristaOrea,
+    BaristaOrigami,
+    BaristaTricolate,
+    BaristaPulsar,
+    BaristaApril,
+    BaristaStagg,
+    BaristaPano,
+    BaristaMelitta,
+    BaristaKoar,
+    BaristaChorreador,
+    BaristaDelter,
+    BaristaGina,
+    BaristaBrikka,
+    BaristaNapolitana,
+    BaristaAeroPressStandard,
 } BaristaMethod;
 
 typedef enum {
@@ -35,13 +55,15 @@ typedef struct {
 } BaristaStep;
 
 typedef struct {
+    char name[32]; // e.g. "Tetsu 4:6"
+    char bean[32]; // e.g. "Etiopia"
     uint16_t dose; // Tenths of a gram.
     uint16_t ratio; // Tenths: 20 means 1:2.0.
     uint16_t seconds;
     uint16_t temperature; // Reference only; no sensor.
     uint8_t servings; // Recipe scale, 1..8.
     uint8_t step_count;
-    uint8_t reserved;
+    uint8_t method; // Uses BaristaMethod enum
     BaristaStep steps[BARISTA_STEP_COUNT];
     uint8_t grind; // Variable reference setting, 1..100.
 } BaristaRecipe;
@@ -63,9 +85,10 @@ typedef struct {
 
 typedef struct {
     uint32_t revision;
-    BaristaRecipe recipes[BARISTA_METHOD_COUNT];
+    BaristaRecipe recipes[BARISTA_RECIPE_COUNT];
     BaristaEntry history[BARISTA_HISTORY_COUNT]; // Newest first.
-    uint8_t count;
+    uint8_t history_count;
+    uint8_t recipe_count;
     uint8_t selected;
     uint8_t language;
     uint8_t grinder_field;

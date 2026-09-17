@@ -43,7 +43,6 @@ static void flipper_print_version(const char* target, const Version* version) {
 
 #include <applications/main/archive/helpers/archive_favorites.h>
 #include <bt/bt_service/bt_keys_filename.h>
-#include <bt/bt_service/bt.h>
 #include <bt/bt_settings_filename.h>
 #include <desktop/desktop_keybinds_filename.h>
 #include <desktop/desktop_settings_filename.h>
@@ -143,15 +142,8 @@ void flipper_mount_callback(const void* message, void* context) {
         // Migrate locations before other services load on SD insert
         flipper_migrate_files();
 
-        // TODO: Need to restart services that already applied previous name
+        // Bluetooth reloads its identity from its own queued storage event.
         namespoof_init();
-        // BLE may have started before the SD card was mounted. Recreate the
-        // serial profile so GAP and the advertisement use the loaded identity.
-        if(furi_record_exists(RECORD_BT)) {
-            Bt* bt = furi_record_open(RECORD_BT);
-            bt_profile_restore_default(bt);
-            furi_record_close(RECORD_BT);
-        }
 
         // TODO: If new SD doesn't contain all current settings IDs, values
         // from previous SD are kept for these settings

@@ -39,6 +39,7 @@ static void ble_profile_serial_stop(FuriHalBleProfileBase* profile) {
     ble_svc_battery_stop(serial_profile->battery_svc);
     ble_svc_dev_info_stop(serial_profile->dev_info_svc);
     ble_svc_serial_stop(serial_profile->serial_svc);
+    free(serial_profile);
 }
 
 // AN5289: 4.7, in order to use flash controller interval must be at least 25ms + advertisement, which is 30 ms

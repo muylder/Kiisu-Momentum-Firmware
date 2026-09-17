@@ -47,13 +47,26 @@ static bool bt_keys_storage_save(BtKeysStorage* instance) {
     memcpy(save_data->pairing_data, instance->nvm_sram_buff, instance->current_size);
     furi_hal_bt_nvm_sram_sem_release();
 
+    // Keep the last committed pairing file intact while writing the new snapshot.
+    FuriString* staging_path =
+        furi_string_alloc_printf("%s.tmp", furi_string_get_cstr(instance->file_path));
     bool saved = saved_struct_save(
-        furi_string_get_cstr(instance->file_path),
+        furi_string_get_cstr(staging_path),
         save_data,
         sizeof(GapRootSecurityKeys) + instance->current_size,
         BT_KEYS_STORAGE_MAGIC,
         BT_KEYS_STORAGE_VERSION);
 
+    if(saved) {
+        Storage* storage = furi_record_open(RECORD_STORAGE);
+        saved = storage_common_rename(
+                    storage,
+                    furi_string_get_cstr(staging_path),
+                    furi_string_get_cstr(instance->file_path)) == FSE_OK;
+        furi_record_close(RECORD_STORAGE);
+    }
+
+    furi_string_free(staging_path);
     free(save_data);
     return saved;
 }
@@ -66,16 +79,17 @@ static bool bt_keys_storage_load_keys_and_pairings(
         return false;
     }
 
-    const BtKeysStorageFile* loaded = (const BtKeysStorageFile*)file_data;
-    memcpy(&instance->root_keys, &loaded->root_keys, sizeof(GapRootSecurityKeys));
-
     size_t ble_data_size = data_size - sizeof(GapRootSecurityKeys);
     if(ble_data_size > instance->nvm_sram_buff_size) {
         FURI_LOG_E(TAG, "BLE data too large for SRAM buffer");
         return false;
     }
 
+    const BtKeysStorageFile* loaded = (const BtKeysStorageFile*)file_data;
+    memcpy(&instance->root_keys, &loaded->root_keys, sizeof(GapRootSecurityKeys));
+
     furi_hal_bt_nvm_sram_sem_acquire();
+    memset(instance->nvm_sram_buff, 0, instance->nvm_sram_buff_size);
     memcpy(instance->nvm_sram_buff, loaded->pairing_data, ble_data_size);
     instance->current_size = ble_data_size;
     furi_hal_bt_nvm_sram_sem_release();
@@ -208,6 +222,13 @@ bool bt_keys_storage_is_changed(BtKeysStorage* instance) {
             break;
         }
 
+        if(payload_size > sizeof(GapRootSecurityKeys) + instance->nvm_sram_buff_size ||
+           (file_version == BT_KEYS_STORAGE_VERSION &&
+            payload_size < sizeof(GapRootSecurityKeys))) {
+            is_changed = true;
+            break;
+        }
+
         // Early check for legacy version: always considered changed, no need to load
         if(file_version == BT_KEYS_STORAGE_LEGACY_VERSION) {
             is_changed = true;
@@ -220,6 +241,7 @@ bool bt_keys_storage_is_changed(BtKeysStorage* instance) {
 
         if(!data_loaded) {
             FURI_LOG_E(TAG, "Failed to load file");
+            is_changed = true;
             break;
         }
 
@@ -229,6 +251,7 @@ bool bt_keys_storage_is_changed(BtKeysStorage* instance) {
         if(payload_size == expected_file_size) {
             furi_hal_bt_nvm_sram_sem_acquire();
             is_changed =
+                memcmp(&loaded->root_keys, &instance->root_keys, sizeof(GapRootSecurityKeys)) ||
                 memcmp(loaded->pairing_data, instance->nvm_sram_buff, instance->current_size);
             furi_hal_bt_nvm_sram_sem_release();
         } else {
@@ -267,14 +290,19 @@ static bool bt_keys_storage_load_legacy_pairings(
     return true;
 }
 
-bool bt_keys_storage_load(BtKeysStorage* instance) {
+static bool bt_keys_storage_load_path(BtKeysStorage* instance, const char* file_path) {
     furi_assert(instance);
 
-    const char* file_path = furi_string_get_cstr(instance->file_path);
     size_t payload_size;
     uint8_t file_version;
     if(!bt_keys_storage_validate_file(file_path, &payload_size, &file_version)) {
         FURI_LOG_E(TAG, "Invalid or corrupted file");
+        return false;
+    }
+    if(payload_size > sizeof(GapRootSecurityKeys) + instance->nvm_sram_buff_size ||
+       (file_version == BT_KEYS_STORAGE_VERSION && payload_size < sizeof(GapRootSecurityKeys)) ||
+       (file_version == BT_KEYS_STORAGE_LEGACY_VERSION && payload_size == 0)) {
+        FURI_LOG_E(TAG, "Invalid key storage size");
         return false;
     }
 
@@ -300,6 +328,23 @@ bool bt_keys_storage_load(BtKeysStorage* instance) {
     return loaded;
 }
 
+bool bt_keys_storage_load(BtKeysStorage* instance) {
+    furi_assert(instance);
+    if(bt_keys_storage_load_path(instance, furi_string_get_cstr(instance->file_path))) {
+        return true;
+    }
+
+    // A crash during replacement can leave a complete staging file behind.
+    FuriString* staging_path =
+        furi_string_alloc_printf("%s.tmp", furi_string_get_cstr(instance->file_path));
+    bool loaded = bt_keys_storage_load_path(instance, furi_string_get_cstr(staging_path));
+    furi_string_free(staging_path);
+    if(loaded) {
+        FURI_LOG_W(TAG, "Recovered pairing snapshot after interrupted save");
+    }
+    return loaded;
+}
+
 bool bt_keys_storage_update(BtKeysStorage* instance, uint8_t* start_addr, uint32_t size) {
     furi_assert(instance);
     furi_assert(start_addr);
@@ -314,13 +359,17 @@ bool bt_keys_storage_update(BtKeysStorage* instance, uint8_t* start_addr, uint32
         size);
 
     do {
-        size_t new_size = start_addr - instance->nvm_sram_buff + size;
-        if(new_size > instance->nvm_sram_buff_size) {
+        const uintptr_t base = (uintptr_t)instance->nvm_sram_buff;
+        const uintptr_t start = (uintptr_t)start_addr;
+        if(start < base || start - base > instance->nvm_sram_buff_size ||
+           size > instance->nvm_sram_buff_size - (start - base)) {
             FURI_LOG_E(TAG, "NVM RAM buffer overflow");
             break;
         }
 
-        instance->current_size = new_size;
+        // An NVM event describes a changed range, not the complete database size.
+        const size_t new_size = start - base + size;
+        instance->current_size = MAX(instance->current_size, new_size);
 
         // Save using version 1 format with embedded root keys
         bool data_updated = bt_keys_storage_save(instance);

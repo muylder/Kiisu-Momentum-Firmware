@@ -111,6 +111,7 @@ static bool furi_hal_rtc_start_clock_and_switch(void) {
 
 static void furi_hal_rtc_recover(void) {
     DateTime datetime = {0};
+    uint32_t bkp_regs[RTC_BKP_NUMBER];
 
     // Handle fixable LSE failure
     if(LL_RCC_LSE_IsCSSDetected()) {
@@ -129,10 +130,39 @@ static void furi_hal_rtc_recover(void) {
         furi_hal_rtc_get_datetime(&datetime);
     }
 
-    // Reset RTC Domain
-    furi_hal_rtc_reset();
+    // Backup RTC registers before resetting the backup domain
+    for(size_t i = 0; i < RTC_BKP_NUMBER; i++) {
+        bkp_regs[i] = furi_hal_rtc_get_register(i);
+    }
 
-    // Start Clock
+    // Reset RTC Domain
+    LL_RCC_ForceBackupDomainReset();
+    LL_RCC_ReleaseBackupDomainReset();
+
+    // Enable RTCAPB clock
+    LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_RTCAPB);
+
+    // Disable write protection
+    LL_RTC_DisableWriteProtection(RTC);
+
+    // Enter Initialization mode and wait for INIT flag to be set
+    furi_hal_rtc_enter_init_mode();
+
+    // Set clock source
+    LL_RCC_SetRTCClockSource(LL_RCC_RTC_CLKSOURCE_LSI);
+    LL_RCC_EnableRTC();
+
+    // Restore RTC registers
+    for(size_t i = 0; i < RTC_BKP_NUMBER; i++) {
+        furi_hal_rtc_set_register(i, bkp_regs[i]);
+    }
+
+    // Exit Initialization mode
+    furi_hal_rtc_exit_init_mode();
+
+    // Enable write protection
+    LL_RTC_EnableWriteProtection(RTC);
+
     if(!furi_hal_rtc_start_clock_and_switch()) {
         // Plan C: reset RTC and restart
         furi_hal_light_sequence("rgb R.r.R.r.R.r");

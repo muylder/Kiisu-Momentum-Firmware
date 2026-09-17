@@ -1,0 +1,14 @@
+App(
+    appid="barista",
+    name="Barista",
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="barista_app",
+    requires=["gui", "notification", "storage"],
+    stack_size=4 * 1024,
+    fap_category="Tools",
+    fap_version="0.1",
+    fap_author="muylder (AI-assisted implementation)",
+    fap_description="Barista recipes, guided brewing, ratio calculator and tasting journal",
+    fap_weburl="https://github.com/muylder/Kiisu-Momentum-Firmware/tree/kiisu-compilation/applications_user/barista",
+    sources=["*.c"],
+)

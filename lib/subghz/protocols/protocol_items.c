@@ -84,6 +84,15 @@ const SubGhzProtocol* const subghz_protocol_registry_items[] = {
     &subghz_protocol_feron,
     &subghz_protocol_roger,
     &subghz_protocol_elplast,
+
+
+
+
+
+    &subghz_protocol_nord_ice,
+
+
+
 };
 
 const SubGhzProtocolRegistry subghz_protocol_registry = {

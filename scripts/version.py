@@ -78,7 +78,7 @@ class GitVersion:
             if not line:
                 continue
             _, destination = line.split("\t")
-            url, _ = destination.split(" ")
+            url = destination.split(" ")[0]
             origins.add(url)
             break
         if len(origins) == 1:

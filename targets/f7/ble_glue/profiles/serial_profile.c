@@ -43,9 +43,9 @@ static void ble_profile_serial_stop(FuriHalBleProfileBase* profile) {
 
 // AN5289: 4.7, in order to use flash controller interval must be at least 25ms + advertisement, which is 30 ms
 // Since we don't use flash controller anymore interval can be lowered to 7.5ms
-#define CONNECTION_INTERVAL_MIN (0x06)
-// Absolute minimum 7.5ms for both
-#define CONNECTION_INTERVAL_MAX (0x06)
+// Apple BLE Guidelines: Min >= 15ms (0x0C), Max must be >= Min + 15ms (0x18 = 30ms)
+#define CONNECTION_INTERVAL_MIN (0x0C)
+#define CONNECTION_INTERVAL_MAX (0x18)
 
 static const GapConfig serial_template_config = {
     .adv_service =

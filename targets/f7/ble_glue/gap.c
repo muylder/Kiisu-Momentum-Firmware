@@ -384,8 +384,8 @@ static void gap_init_svc(Gap* gap, const GapRootSecurityKeys* root_keys) {
     aci_hal_write_config_data(CONFIG_DATA_IR_OFFSET, CONFIG_DATA_IR_LEN, (uint8_t*)gap_legacy_irk);
     // Set Encryption root key used to derive LTK and CSRK
     aci_hal_write_config_data(CONFIG_DATA_ER_OFFSET, CONFIG_DATA_ER_LEN, (uint8_t*)gap_legacy_erk);
-    // Set TX Power to Max (0x1F = +6dBm)
-    aci_hal_set_tx_power_level(1, 0x1F);
+    // Set TX Power to Absolute Max (0x23)
+    aci_hal_set_tx_power_level(1, 0x23);
     // Initialize GATT interface
     aci_gatt_init();
     // Initialize GAP interface

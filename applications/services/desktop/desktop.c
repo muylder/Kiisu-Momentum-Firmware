@@ -462,17 +462,17 @@ int32_t desktop_shutdown(void* context) {
 
     // Critical safety measures to prevent crash during shutdown with PIN enabled
     // Especially important after waking from deep sleep
-    
+
     // 1. Ensure we're not in a critical state before shutdown
     furi_delay_ms(150); // Increased delay to ensure UI state is fully stable
-    
+
     // 2. Verify and clean RTC state
     // After deep sleep, RTC might have stale data causing crashes
     if(furi_hal_rtc_is_flag_set(FuriHalRtcFlagLock)) {
         // Reset PIN fail counter if device is locked
         furi_hal_rtc_set_pin_fails(0);
     }
-    
+
     // 3. Ensure power subsystem is accessible
     // This prevents null pointer dereferences
     furi_check(desktop);

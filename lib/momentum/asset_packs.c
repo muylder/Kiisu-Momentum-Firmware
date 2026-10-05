@@ -7,7 +7,7 @@
 #include <furi_hal.h>
 #include <gui/icon_i.h>
 #include <storage/storage.h>
-#include <string.h>  // For memset
+#include <string.h> // For memset
 
 #define TAG "AssetPacks"
 
@@ -18,7 +18,7 @@
 #define U8G2_FONT_DATA_STRUCT_SIZE 23
 
 // Icon cache optimization - cache frequently used icons
-#define ICON_CACHE_SIZE 16
+#define ICON_CACHE_SIZE       16
 #define ICON_CACHE_TIMEOUT_MS 5000
 
 typedef struct {
@@ -283,7 +283,7 @@ const Icon* asset_packs_swap_icon(const Icon* requested) {
                 icon_cache[icon_cache_head].last_access = current_tick;
                 icon_cache[icon_cache_head].access_count = 1;
                 icon_cache_head = (icon_cache_head + 1) % ICON_CACHE_SIZE;
-                
+
                 return icon_swap->replaced;
             }
         }

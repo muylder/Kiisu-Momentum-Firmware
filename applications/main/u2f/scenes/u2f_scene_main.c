@@ -22,7 +22,8 @@ static void u2f_scene_main_open_unsecure_enclave_ok(InputType type, void* contex
 
     // Enqueue launch of Unsecure Enclave ext app and exit this app
     Loader* loader = furi_record_open(RECORD_LOADER);
-    loader_enqueue_launch(loader, "/ext/apps/Tools/unsecure_enclave.fap", NULL, LoaderDeferredLaunchFlagGui);
+    loader_enqueue_launch(
+        loader, "/ext/apps/Tools/unsecure_enclave.fap", NULL, LoaderDeferredLaunchFlagGui);
     furi_record_close(RECORD_LOADER);
 
     view_dispatcher_stop(app->view_dispatcher);
@@ -131,8 +132,8 @@ void u2f_scene_main_on_enter(void* context) {
     } else {
         u2f_free(app->u2f_instance);
         u2f_view_set_state(app->u2f_view, U2fMsgError);
-    // Error state: OK opens Unsecure Enclave
-    u2f_view_set_ok_callback(app->u2f_view, u2f_scene_main_open_unsecure_enclave_ok, app);
+        // Error state: OK opens Unsecure Enclave
+        u2f_view_set_ok_callback(app->u2f_view, u2f_scene_main_open_unsecure_enclave_ok, app);
     }
 
     view_dispatcher_switch_to_view(app->view_dispatcher, U2fAppViewMain);

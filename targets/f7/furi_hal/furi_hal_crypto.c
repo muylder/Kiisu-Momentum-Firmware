@@ -48,13 +48,13 @@ static FuriMutex* furi_hal_crypto_mutex = NULL;
 static bool furi_hal_crypto_mode_init_done = false;
 
 /* Unsecure enclave: persistent key slots under internal storage */
-#define ENCLAVE_DIR INT_PATH("enclave")
+#define ENCLAVE_DIR                  INT_PATH("enclave")
 #define ENCLAVE_SLOT_FILENAME_FORMAT ENCLAVE_DIR "/slot_%03u.bin"
 
 typedef struct {
     uint8_t version; /* 1 */
-    uint8_t type;    /* FuriHalCryptoKeyType */
-    uint8_t size;    /* key bytes length: 16 or 32 */
+    uint8_t type; /* FuriHalCryptoKeyType */
+    uint8_t size; /* key bytes length: 16 or 32 */
     uint8_t reserved;
     /* followed by key data of length `size` for Simple/Master.
        For Encrypted type, contents are stored as-is, but load is unsupported and will fail. */
@@ -215,9 +215,12 @@ bool furi_hal_crypto_enclave_store_key(FuriHalCryptoKey* key, uint8_t* slot) {
 
         /* Validate key params and compute payload size */
         uint8_t key_len = 0;
-        if(key->size == FuriHalCryptoKeySize128) key_len = 16;
-        else if(key->size == FuriHalCryptoKeySize256) key_len = 32;
-        else furi_crash("Incorrect key size");
+        if(key->size == FuriHalCryptoKeySize128)
+            key_len = 16;
+        else if(key->size == FuriHalCryptoKeySize256)
+            key_len = 32;
+        else
+            furi_crash("Incorrect key size");
 
         /* Encrypted keys are not supported for load; still store as-is */
         size_t payload_len = key_len;

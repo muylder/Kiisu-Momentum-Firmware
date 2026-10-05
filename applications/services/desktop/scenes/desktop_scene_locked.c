@@ -86,20 +86,20 @@ bool desktop_scene_locked_on_event(void* context, SceneManagerEvent event) {
             if(momentum_settings.lockscreen_poweroff) {
                 // Critical: Ensure proper cleanup before shutdown
                 // This prevents crash when shutting down with PIN enabled after deep sleep
-                
+
                 // 1. Disable GUI lockdown to allow power dialog
                 Gui* gui = furi_record_open(RECORD_GUI);
                 gui_set_lockdown(gui, false);
                 furi_record_close(RECORD_GUI);
-                
+
                 // 2. Clear any pending RTC flags that might interfere
                 // This is crucial after waking from deep sleep
                 furi_hal_rtc_set_pin_fails(0);
-                
+
                 // 3. Force a small delay to allow system to stabilize
                 // This prevents race conditions after deep sleep wake
                 furi_delay_ms(150);
-                
+
                 // 4. Increase stack size to prevent crash during shutdown with PIN enabled
                 // Original 512 bytes was insufficient for:
                 // - Power dialog allocation

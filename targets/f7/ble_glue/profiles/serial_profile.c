@@ -44,8 +44,8 @@ static void ble_profile_serial_stop(FuriHalBleProfileBase* profile) {
 // AN5289: 4.7, in order to use flash controller interval must be at least 25ms + advertisement, which is 30 ms
 // Since we don't use flash controller anymore interval can be lowered to 7.5ms
 #define CONNECTION_INTERVAL_MIN (0x06)
-// Up to 45 ms
-#define CONNECTION_INTERVAL_MAX (0x24)
+// Up to 15 ms for faster throughput and avoiding RPC timeouts
+#define CONNECTION_INTERVAL_MAX (0x0C)
 
 static const GapConfig serial_template_config = {
     .adv_service =

@@ -345,17 +345,47 @@ static void gap_init_svc(Gap* gap, const GapRootSecurityKeys* root_keys) {
     srd_bd_addr[0] = LL_FLASH_GetUDN();
     aci_hal_write_config_data(
         CONFIG_DATA_RANDOM_ADDRESS_OFFSET, CONFIG_DATA_RANDOM_ADDRESS_LEN, (uint8_t*)srd_bd_addr);
-    const uint8_t gap_legacy_irk[16] =
-        {0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0};
-    const uint8_t gap_legacy_erk[16] =
-        {0xfe, 0xdc, 0xba, 0x09, 0x87, 0x65, 0x43, 0x21, 0xfe, 0xdc, 0xba, 0x09, 0x87, 0x65, 0x43, 0x21};
+    const uint8_t gap_legacy_irk[16] = {
+        0x12,
+        0x34,
+        0x56,
+        0x78,
+        0x9a,
+        0xbc,
+        0xde,
+        0xf0,
+        0x12,
+        0x34,
+        0x56,
+        0x78,
+        0x9a,
+        0xbc,
+        0xde,
+        0xf0};
+    const uint8_t gap_legacy_erk[16] = {
+        0xfe,
+        0xdc,
+        0xba,
+        0x09,
+        0x87,
+        0x65,
+        0x43,
+        0x21,
+        0xfe,
+        0xdc,
+        0xba,
+        0x09,
+        0x87,
+        0x65,
+        0x43,
+        0x21};
 
     // Set Identity root key used to derive LTK and CSRK
     aci_hal_write_config_data(CONFIG_DATA_IR_OFFSET, CONFIG_DATA_IR_LEN, (uint8_t*)gap_legacy_irk);
     // Set Encryption root key used to derive LTK and CSRK
     aci_hal_write_config_data(CONFIG_DATA_ER_OFFSET, CONFIG_DATA_ER_LEN, (uint8_t*)gap_legacy_erk);
-    // Set TX Power to 0 dBm
-    aci_hal_set_tx_power_level(1, 0x19);
+    // Set TX Power to Max (0x1F = +6dBm)
+    aci_hal_set_tx_power_level(1, 0x1F);
     // Initialize GATT interface
     aci_gatt_init();
     // Initialize GAP interface

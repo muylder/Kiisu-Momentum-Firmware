@@ -405,11 +405,7 @@ void desktop_lock(Desktop* desktop, bool with_pin) {
             cli_vcp_disable(cli_vcp);
             furi_record_close(RECORD_CLI_VCP);
         }
-        if(!momentum_settings.allow_locked_rpc_ble) {
-            Bt* bt = furi_record_open(RECORD_BT);
-            bt_close_rpc_connection(bt);
-            furi_record_close(RECORD_BT);
-        }
+        // [KIISU] Force BLE RPC to stay active even when locked (bypass Momentum lock restriction)
     }
 
     desktop_auto_lock_inhibit(desktop);
@@ -443,11 +439,7 @@ void desktop_unlock(Desktop* desktop) {
             cli_vcp_enable(cli_vcp);
             furi_record_close(RECORD_CLI_VCP);
         }
-        if(!momentum_settings.allow_locked_rpc_ble) {
-            Bt* bt = furi_record_open(RECORD_BT);
-            bt_open_rpc_connection(bt);
-            furi_record_close(RECORD_BT);
-        }
+        // [KIISU] BLE RPC is always open
     }
 
     DesktopStatus status = {.locked = false};
